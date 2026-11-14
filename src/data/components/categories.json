@@ -1,0 +1,11 @@
+[
+  { "id": "bus", "label": "Spacecraft Bus", "description": "Structure, avionics, and flight computer that hold everything together.", "maxUnits": 1 },
+  { "id": "propulsion", "label": "Propulsion", "description": "Engines for orbit insertion, descent, and maneuvers.", "maxUnits": 2 },
+  { "id": "power", "label": "Power System", "description": "Generates electrical power.", "maxUnits": 3 },
+  { "id": "battery", "label": "Battery", "description": "Stores energy for eclipses and the lunar night.", "maxUnits": 4 },
+  { "id": "communication", "label": "Communication", "description": "Links to the relay orbiter and Earth.", "maxUnits": 2 },
+  { "id": "payload", "label": "Scientific Payload", "description": "Instruments that produce the mission's science.", "maxUnits": 3 },
+  { "id": "landing", "label": "Landing System", "description": "Hardware for a safe touchdown.", "maxUnits": 2 },
+  { "id": "thermal", "label": "Thermal Control", "description": "Keeps hardware within operating temperatures.", "maxUnits": 3 },
+  { "id": "robotics", "label": "Robotic Construction", "description": "Robots that deploy and assemble surface hardware.", "maxUnits": 3 }
+]

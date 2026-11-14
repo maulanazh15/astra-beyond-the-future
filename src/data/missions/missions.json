@@ -1,0 +1,94 @@
+{
+  "disclaimer": {
+    "classification": "fictional-gameplay-values",
+    "note": "LUNAR ECHO is a hypothetical mission inspired by NASA research. Budget, duration, and requirement values are fictional gameplay values, not NASA plans or specifications."
+  },
+  "missions": [
+    {
+      "id": "lunar-echo",
+      "name": "LUNAR ECHO",
+      "subtitle": "Far-Side Radio Observatory",
+      "destination": "Moon — Far Side",
+      "description": "Deploy a low-frequency radio telescope inside a far-side crater, shielded from Earth's radio noise.",
+      "background": "The lunar far side is the most radio-quiet place in the inner Solar System. A crater-based observatory could observe the cosmic Dark Ages at frequencies blocked by Earth's ionosphere. This scenario is inspired by the NASA NIAC Lunar Crater Radio Telescope (LCRT) concept.",
+      "status": "available",
+      "difficulty": "Intermediate",
+      "budgetMUsd": 600,
+      "durationDays": 365,
+      "objectives": [
+        {
+          "id": "obj-deploy",
+          "label": "Deploy a functional radio antenna array",
+          "metric": "Antenna deployment ≥ 90%"
+        },
+        {
+          "id": "obj-observe",
+          "label": "Observe in the 5–50 MHz band",
+          "metric": "≥ 180 operational days"
+        },
+        {
+          "id": "obj-return",
+          "label": "Return science data to Earth",
+          "metric": "≥ 15,000 Gb returned via relay orbiter"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "req-budget",
+          "kind": "withinBudget",
+          "label": "Total cost within mission budget (incl. launch)"
+        },
+        {
+          "id": "req-mass",
+          "kind": "withinLaunchCapacity",
+          "label": "Spacecraft mass within launch vehicle capacity"
+        },
+        {
+          "id": "req-power",
+          "kind": "minNetPowerW",
+          "label": "Positive daytime power margin of at least 100 W",
+          "target": 100
+        },
+        {
+          "id": "req-energy",
+          "kind": "minEnergyStorageWh",
+          "label": "At least 12,000 Wh of energy storage for the lunar night",
+          "target": 12000
+        },
+        {
+          "id": "req-systems",
+          "kind": "requiredCategories",
+          "label": "All core subsystems installed",
+          "categories": [
+            "bus",
+            "propulsion",
+            "power",
+            "battery",
+            "communication",
+            "payload",
+            "landing",
+            "thermal",
+            "robotics"
+          ]
+        }
+      ],
+      "constraints": [
+        "No direct line of sight to Earth — relay communication required",
+        "Lunar night lasts ~14 Earth days; survive extreme cold",
+        "Antenna must be deployed robotically inside the crater"
+      ],
+      "successCriteria": [
+        "Observatory operational for at least 6 months",
+        "Primary science objective achieved",
+        "Mission stays within budget"
+      ],
+      "sources": [
+        "NASA NIAC — Lunar Crater Radio Telescope (LCRT)",
+        "LRO LOLA terrain data",
+        "LRO Diviner thermal data"
+      ],
+      "requiredOperationDays": 180,
+      "dataReturnTargetGb": 15000
+    }
+  ]
+}

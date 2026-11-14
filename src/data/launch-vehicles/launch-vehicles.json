@@ -1,0 +1,5 @@
+[
+  { "id": "lv-medium", "name": "Medium-Lift Launcher", "payloadCapacityKg": 1200, "costMUsd": 70, "reliability": 0.97, "compatibleOrbitIds": ["orb-phasing", "orb-low-energy"] },
+  { "id": "lv-heavy", "name": "Heavy-Lift Launcher", "payloadCapacityKg": 4000, "costMUsd": 150, "reliability": 0.96, "compatibleOrbitIds": ["orb-direct", "orb-phasing", "orb-low-energy"] },
+  { "id": "lv-super", "name": "Super Heavy Launcher", "payloadCapacityKg": 15000, "costMUsd": 400, "reliability": 0.93, "compatibleOrbitIds": ["orb-direct", "orb-phasing"] }
+]

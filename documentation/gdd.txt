@@ -1,0 +1,1661 @@
+# ASTRA: BEYOND THE FUTURE
+## Game Design Document (GDD) — Version 1.2
+
+**Subtitle:** Space Mission Design & Simulation  
+**Tagline:** Design Tomorrow. Explore Beyond.
+
+| Project Information | Details |
+|---|---|
+| Project | NASA Space Apps Challenge 2026 — Space Mission Design Game |
+| Genre | Strategy, Simulation, Educational |
+| Platform | Web Browser |
+| Game Mode | Single-player, Local Cooperative |
+| Players | 1–4 players |
+| Mission Direction | Hypothetical Future Missions |
+| Gameplay Scope | Hybrid: Mission Design + Full Lifecycle Simulation |
+| Realism | Balanced — scientifically grounded, accessible gameplay |
+| Primary Language | English, with potential Indonesian localization |
+| Document Version | 1.2 |
+
+---
+
+# 1. GAME OVERVIEW
+
+## 1.1 High Concept
+
+ASTRA: BEYOND THE FUTURE is an interactive space mission design and simulation game that challenges players to plan, build, launch, operate, and evaluate hypothetical future space missions.
+
+Players take the role of a mission design team responsible for translating scientific objectives into feasible space missions.
+
+They must make interconnected engineering decisions involving:
+
+- Mission objectives and scientific requirements.
+- Spacecraft architecture and subsystems.
+- Scientific instruments and payload.
+- Launch vehicle selection.
+- Orbit and trajectory planning.
+- Budget, mass, power, and energy.
+- Propulsion and fuel.
+- Communication and scientific data.
+- Mission duration and operational risk.
+
+Every decision influences the mission's performance and probability of success.
+
+ASTRA transforms aerospace engineering trade-offs into an interactive learning experience. Players do not simply control a spacecraft; they experience the reasoning and constraints behind designing a space mission.
+
+## 1.2 Vision Statement
+
+> Empower everyone to design the future of space exploration through science, engineering, and interactive simulation.
+
+## 1.3 Core Objectives
+
+1. Make aerospace engineering understandable through interactive gameplay.
+2. Demonstrate the relationships and trade-offs between mission design decisions.
+3. Integrate real NASA research, scientific datasets, and technical references.
+4. Encourage creative but scientifically plausible future mission concepts.
+5. Simulate the complete mission lifecycle, from initial requirements to final evaluation.
+6. Teach players to diagnose engineering problems and improve their designs.
+
+## 1.4 Unique Selling Points
+
+**Future Mission Design**
+
+Players create hypothetical missions that explore possibilities beyond currently flown missions.
+
+**Engineering Trade-offs**
+
+Every component and configuration has benefits, costs, limitations, and risks.
+
+**NASA-Informed Gameplay**
+
+NASA datasets and technical research influence mission conditions and engineering decisions.
+
+**Complete Mission Simulation**
+
+Players experience planning, validation, launch, transit, deployment, operations, and evaluation.
+
+**Collaborative Mission Planning**
+
+Up to four players can negotiate priorities and work together to design a mission.
+
+**Learning Through Failure**
+
+Players receive explanations of mission failures and recommendations for redesign.
+
+---
+
+# 2. DESIGN PILLARS
+
+## Pillar 1 — Scientific Plausibility
+
+Every mission must have a defensible scientific objective and engineering assumptions.
+
+NASA datasets and research provide the scientific foundation. Simplifications must be documented and must not be presented as actual NASA predictions.
+
+## Pillar 2 — Meaningful Engineering Decisions
+
+Every major design decision should have consequences.
+
+For example:
+- A larger antenna can improve communication performance but increase mass and power demand.
+- A more powerful propulsion system can improve maneuver capability but increase cost and mass.
+- More scientific instruments can increase scientific value but consume power, mass, and data storage.
+
+## Pillar 3 — Learn Through Experimentation
+
+Players should be encouraged to test configurations, experience failures, diagnose their causes, and redesign their missions.
+
+## Pillar 4 — Accessible Complexity
+
+Technical concepts should be introduced progressively.
+
+The game should provide:
+- Explanations of technical terminology.
+- Visual resource indicators.
+- Engineering warnings.
+- Simplified calculation details.
+- Optional advanced information.
+
+## Pillar 5 — Complete Mission Experience
+
+The player must experience the full lifecycle of a space mission, not only spacecraft assembly.
+
+## Pillar 6 — Data with Purpose
+
+NASA data must influence gameplay decisions rather than serve only as decoration.
+
+A lunar terrain dataset, for example, should influence site selection and landing difficulty.
+
+---
+
+# 3. TARGET AUDIENCE
+
+| Audience | Intended Experience |
+|---|---|
+| High school students | Introductory space engineering |
+| University students | Applied engineering and systems thinking |
+| Space enthusiasts | Mission planning experimentation |
+| General public | Interactive science education |
+| Educators | STEM learning resource |
+
+ASTRA should be approachable for people without an aerospace engineering background while still offering meaningful engineering decisions for more experienced players.
+
+---
+
+# 4. GAME STRUCTURE AND CORE GAMEPLAY
+
+## 4.1 Core Gameplay Loop
+
+**Discover → Define → Design → Plan → Validate → Launch → Operate → Evaluate → Redesign**
+
+### Phase 1 — Mission Discovery
+
+Players select a future mission scenario and receive a mission briefing.
+
+The briefing includes:
+- Mission background.
+- Scientific objective.
+- Destination.
+- Required scientific measurements.
+- Mission duration.
+- Success criteria.
+- Available budget.
+- Engineering constraints.
+- Relevant NASA research and datasets.
+
+### Phase 2 — Mission Definition
+
+Players translate the scientific objective into measurable engineering requirements.
+
+Example for LUNAR ECHO:
+
+- Deploy a functional low-frequency radio observatory.
+- Operate within the mission's designated frequency range.
+- Maintain the required instrument uptime.
+- Collect sufficient valid observations.
+- Store the collected data safely.
+- Transmit the required amount of scientific data to Earth.
+- Complete the designated operational period.
+
+### Phase 3 — Spacecraft Design
+
+Players configure the mission architecture and select spacecraft components.
+
+The design process includes:
+- Spacecraft bus.
+- Payload.
+- Power system.
+- Propulsion.
+- Communication.
+- Thermal management.
+- Landing system.
+- Robotic deployment equipment.
+
+### Phase 4 — Launch and Orbit Planning
+
+Players select a launch vehicle and plan the spacecraft's orbital or transfer configuration.
+
+The selected architecture must be compatible with:
+- Payload mass.
+- Mission destination.
+- Required orbit.
+- Propulsion capability.
+- Budget.
+- Mission timeline.
+
+### Phase 5 — Mission Validation
+
+The game evaluates whether the proposed mission is feasible.
+
+It checks:
+- Budget.
+- Mass.
+- Power.
+- Energy storage.
+- Propellant.
+- Launch vehicle compatibility.
+- Orbit requirements.
+- Communication capability.
+- Data storage and transmission.
+- Mission duration.
+- Scientific requirements.
+
+Invalid configurations produce explanations and suggestions.
+
+### Phase 6 — Mission Simulation
+
+Players initiate the mission and observe the consequences of their design decisions.
+
+The simulation includes:
+- Launch.
+- Spacecraft separation.
+- Transit.
+- Orbital insertion or arrival.
+- Landing or deployment.
+- Scientific operations.
+- Communication windows.
+- Critical events.
+
+### Phase 7 — Mission Operations
+
+Players monitor the mission and respond to operational challenges.
+
+Examples:
+- Adjusting instrument activity.
+- Managing battery reserves.
+- Scheduling scientific observations.
+- Prioritizing data transmission.
+- Responding to communication interruptions.
+- Handling equipment failures.
+- Managing remaining mission time.
+
+### Phase 8 — Mission Evaluation
+
+The game produces a mission report containing:
+- Mission outcome.
+- Scientific achievement.
+- Engineering performance.
+- Resource efficiency.
+- Communication performance.
+- Mission risks.
+- Failure analysis.
+- Recommendations for redesign.
+
+### Phase 9 — Redesign
+
+Players can return to the design phase and modify their architecture.
+
+The game should make it possible to compare different configurations and learn why one configuration performed better than another.
+
+---
+
+# 5. PRIMARY MISSION SCENARIO — LUNAR ECHO
+
+## 5.1 Mission Overview
+
+**Mission Name:** LUNAR ECHO  
+**Mission Type:** Lunar Science and Radio Astronomy  
+**Destination:** Lunar Far Side  
+**Mission Architecture:** Robotic Deployment + Surface Observatory + Orbital Communication Relay  
+**Mission Status:** Hypothetical Future Mission Scenario
+
+LUNAR ECHO is a hypothetical mission to deploy and operate an autonomous low-frequency radio observatory on the far side of the Moon.
+
+The lunar far side provides a valuable environment for radio astronomy because the Moon can shield an observatory from many radio interference sources originating from Earth.
+
+The mission is inspired by scientific concepts studied through NASA's Innovative Advanced Concepts (NIAC) program, particularly the Lunar Crater Radio Telescope (LCRT).
+
+The LCRT concept study proposes a large wire-mesh reflector deployed inside a lunar crater. The NASA NTRS report describes a conceptual 350-meter reflector and an observing frequency range of approximately 4.7–47 MHz.
+
+LUNAR ECHO is not an official NASA mission. ASTRA uses the research as a scientific and conceptual foundation while creating its own hypothetical mission architecture and gameplay.
+
+**Reference:** NASA NTRS — Lunar Crater Radio Telescope (LCRT) NIAC Phase II Report  
+https://ntrs.nasa.gov/citations/20250001334
+
+## 5.2 Scientific Objective
+
+Investigate low-frequency radio signals associated with the early universe and the cosmic Dark Ages.
+
+The game translates this objective into measurable gameplay requirements:
+
+1. Deploy a functioning radio observatory.
+2. Maintain the required instrument configuration.
+3. Achieve sufficient observation time.
+4. Maintain acceptable instrument uptime.
+5. Collect valid scientific observations.
+6. Store the collected observations.
+7. Transmit the required scientific data to Earth.
+8. Complete the designated mission duration.
+
+## 5.3 Mission Architecture
+
+The proposed architecture consists of four major elements.
+
+### A. Launch Segment
+
+Delivers the mission spacecraft and equipment from Earth.
+
+Responsibilities:
+- Launch vehicle selection.
+- Payload accommodation.
+- Initial spacecraft insertion.
+- Launch mass compatibility.
+
+### B. Transfer and Landing Segment
+
+Transports mission equipment to the lunar destination.
+
+Responsibilities:
+- Trajectory planning.
+- Propulsion.
+- Navigation.
+- Lunar orbit insertion or descent.
+- Landing and deployment.
+
+### C. Lunar Surface Segment
+
+Contains the equipment responsible for constructing and operating the observatory.
+
+Responsibilities:
+- Robotic deployment.
+- Antenna and reflector assembly.
+- Scientific observations.
+- Power generation and storage.
+- Local data storage.
+
+### D. Orbital Relay Segment
+
+Provides a communication link between the lunar surface observatory and Earth.
+
+Responsibilities:
+- Communication relay.
+- Data forwarding.
+- Communication availability.
+- Data transmission scheduling.
+
+The architecture is a gameplay design proposal. Players may be allowed to explore alternative architectures where the scenario supports them.
+
+## 5.4 Mission Components
+
+### Spacecraft Bus
+
+The main platform that carries and supports mission equipment.
+
+Parameters:
+- Dry mass.
+- Payload capacity.
+- Structural reliability.
+- Power distribution capacity.
+- Available interfaces.
+
+### Launch Vehicle
+
+The launch system that delivers the spacecraft toward its destination.
+
+Parameters:
+- Payload mass capability.
+- Mission compatibility.
+- Estimated launch cost.
+- Reliability rating.
+- Available mission profile.
+
+### Propulsion System
+
+Provides thrust for trajectory corrections and orbital maneuvers.
+
+Parameters:
+- Propellant mass.
+- Thrust capability.
+- Specific impulse or simplified efficiency rating.
+- Maneuver capability.
+- Mass and cost.
+
+### Landing System
+
+Delivers mission equipment to the lunar surface.
+
+Parameters:
+- Landing payload capacity.
+- Propellant requirements.
+- Landing accuracy.
+- Landing reliability.
+- Surface deployment capability.
+
+### Power System
+
+Supplies electricity to spacecraft and surface equipment.
+
+Available options:
+- Solar panels.
+- Rechargeable batteries.
+- Advanced radioisotope power options, if appropriate for a scenario.
+
+Parameters:
+- Maximum generation power.
+- Storage capacity.
+- Mass.
+- Power degradation.
+- Operational limitations.
+
+The game must distinguish between instantaneous power and stored energy.
+
+### Communication System
+
+Transfers scientific data to Earth.
+
+Available options:
+- Low-gain antenna.
+- High-gain antenna.
+- Orbital communication relay.
+- Surface-to-relay communication link.
+
+Parameters:
+- Data rate.
+- Antenna capability.
+- Power consumption.
+- Communication availability.
+- Link margin.
+- Reliability.
+
+### Scientific Payload
+
+Collects the scientific measurements.
+
+Available instruments:
+- Low-frequency radio antenna.
+- Radio spectrometer.
+- Calibration instrument.
+- Environmental sensor.
+
+Parameters:
+- Scientific value.
+- Power demand.
+- Mass.
+- Data generation rate.
+- Observation capability.
+- Operational reliability.
+
+### Robotic Construction System
+
+Deploys and assembles the lunar observatory.
+
+Parameters:
+- Construction capability.
+- Deployment time.
+- Operational energy.
+- Payload handling capability.
+- Reliability.
+- Construction risk.
+
+### Thermal Management System
+
+Maintains equipment within operational temperature limits.
+
+Parameters:
+- Thermal control capability.
+- Power demand.
+- Mass.
+- Operating temperature range.
+- Thermal risk.
+
+---
+
+# 6. MISSION DESIGN SYSTEM
+
+## 6.1 Mission Requirements
+
+Every mission begins with a list of scientific and engineering requirements.
+
+Requirements are divided into:
+
+**Mandatory Requirements**
+- Must be satisfied for mission validation.
+- Examples: sufficient payload capacity, required scientific instrument, compatible launch vehicle.
+
+**Performance Requirements**
+- Affect mission quality and scoring.
+- Examples: observation duration, data completeness, resource efficiency.
+
+**Optional Requirements**
+- Provide additional benefits.
+- Examples: redundant communication, additional calibration instruments, extended operations.
+
+## 6.2 Spacecraft Configuration
+
+Players select components from a configurable component library.
+
+Every component must contain:
+- Component name.
+- Description.
+- Mass.
+- Power demand or generation.
+- Cost.
+- Reliability or risk rating.
+- Compatibility requirements.
+- Scientific or engineering benefit.
+- Data source or assumption classification.
+
+Component selection must update the resource dashboard immediately.
+
+## 6.3 Launch Vehicle Selection
+
+Launch vehicle selection is a distinct design decision.
+
+The game should provide a curated list of fictionalized or representative launch options.
+
+Each option has:
+- Payload capacity.
+- Destination compatibility.
+- Cost.
+- Reliability rating.
+- Mission profile limitations.
+
+The game must clearly distinguish representative gameplay values from actual launch vehicle specifications.
+
+A launch vehicle is invalid when:
+- The spacecraft exceeds its payload capacity.
+- The destination profile is incompatible.
+- The mission cannot satisfy required propulsion or delivery constraints.
+
+## 6.4 Orbit and Trajectory Planning
+
+Players select an appropriate orbital or transfer architecture.
+
+For LUNAR ECHO, possible gameplay options include:
+- Direct lunar transfer.
+- Lunar orbit before surface deployment.
+- Dedicated relay orbit.
+- Alternative relay architecture.
+
+Parameters:
+- Orbit type.
+- Orbital altitude or selected orbit class.
+- Inclination or geometry class, where relevant.
+- Transfer duration.
+- Communication availability.
+- Propellant demand.
+- Operational constraints.
+
+The MVP should use predefined, scientifically informed orbit profiles rather than a complete orbital mechanics solver.
+
+Advanced versions may integrate SPICE or other trajectory analysis tools.
+
+## 6.5 Design Validation
+
+The design system evaluates all selected components together.
+
+Validation categories:
+- Scientific feasibility.
+- Structural and mass compatibility.
+- Power and energy feasibility.
+- Launch compatibility.
+- Propulsion feasibility.
+- Communication feasibility.
+- Data management feasibility.
+- Mission timeline feasibility.
+
+Every warning should identify:
+1. The failed requirement.
+2. The affected subsystem.
+3. The reason for failure.
+4. The possible corrective action.
+
+---
+
+# 7. ENGINEERING RESOURCE SYSTEM
+
+The game is driven by six core resource categories.
+
+## 7.1 Budget
+
+Represents the financial constraints of the mission.
+
+The player must balance scientific objectives with available funding.
+
+Simplified formula:
+
+Total Mission Cost = Component Cost + Integration Cost + Launch Cost + Operations Cost
+
+The game uses normalized gameplay credits unless a scenario has a documented financial reference.
+
+The game must not imply that fictional component prices are official NASA costs.
+
+## 7.2 Mass
+
+Represents the total mass delivered by the launch system.
+
+Simplified formula:
+
+Total Mass = Bus Mass + Payload Mass + Propulsion Mass + Structure Mass + Other Equipment Mass
+
+Mass must be checked against:
+- Launch vehicle capacity.
+- Transfer system capacity.
+- Landing system capacity.
+- Structural limits.
+
+## 7.3 Power
+
+Represents instantaneous electrical power.
+
+Simplified formula:
+
+Power Balance = Available Generated Power - Active System Power Demand
+
+If power demand exceeds available generation, the player must:
+- Deactivate non-essential systems.
+- Reduce instrument activity.
+- Use stored energy.
+- Improve the power architecture.
+
+## 7.4 Energy Storage
+
+Represents stored electrical energy.
+
+Simplified formula:
+
+Energy Remaining = Previous Energy + Generated Energy - Consumed Energy
+
+The simulation must account for:
+- Battery capacity.
+- Charging.
+- Discharging.
+- Operating duration.
+- Degradation.
+- Energy reserve.
+
+Power and energy must not be treated as interchangeable variables.
+
+## 7.5 Propellant
+
+Represents fuel available for:
+- Trajectory corrections.
+- Orbital insertion.
+- Landing.
+- Other mission maneuvers.
+
+For the MVP, propulsion consumption uses simplified mission-specific estimates.
+
+An advanced version may implement the rocket equation and more detailed propulsion models.
+
+## 7.6 Communication and Data
+
+Communication is treated as a mission resource rather than a simple connection indicator.
+
+The game manages three separate data variables:
+
+**Data Generation**
+
+How much scientific data the instruments produce.
+
+**Data Storage**
+
+How much data can be stored onboard or at the lunar observatory.
+
+**Data Transmission**
+
+How much data can be transmitted during available communication windows.
+
+Simplified formula:
+
+Data Remaining to Transmit = Data Generated - Data Successfully Transmitted
+
+Storage validation:
+
+Stored Data ≤ Available Storage Capacity
+
+Transmission capacity:
+
+Transmitted Data ≤ Available Link Capacity During Communication Window
+
+Communication performance depends on:
+- Antenna capability.
+- Available power.
+- Distance or selected geometry class.
+- Relay availability.
+- Link margin.
+- Communication duration.
+- Data volume.
+
+The MVP uses a simplified communication model based on documented technical references.
+
+## 7.7 Mission Time
+
+Represents the available time for completing mission objectives.
+
+Time is consumed during:
+- Launch and transit.
+- Orbital maneuvers.
+- Landing.
+- Robotic deployment.
+- Scientific observations.
+- Communication.
+- Maintenance and recovery events.
+
+A mission may have adequate equipment and resources but still fail to complete its objectives within the available duration.
+
+## 7.8 Reliability and Risk
+
+Each subsystem has a reliability or risk rating.
+
+The MVP uses deterministic thresholds and event-based failures rather than claiming to calculate real spacecraft failure probabilities.
+
+Advanced versions may introduce probabilistic failure models.
+
+---
+
+# 8. NASA DATA INTEGRATION AND SCIENTIFIC FOUNDATION
+
+## 8.1 Data Integration Philosophy
+
+NASA resources are used as the scientific and technical foundation of ASTRA.
+
+The game must distinguish three types of information:
+
+**A. Observational Data**
+
+Data measured or collected by NASA missions and instruments.
+
+Examples:
+- Lunar surface elevation.
+- Lunar surface imagery.
+- Lunar surface temperature observations.
+
+**B. Engineering References and Research**
+
+NASA technical documents, mission studies, and engineering publications.
+
+Examples:
+- Spacecraft subsystem references.
+- Communication system studies.
+- LCRT concept research.
+
+**C. Gameplay Assumptions**
+
+Values created by the ASTRA team to support gameplay balance.
+
+Examples:
+- Fictional component prices.
+- Simplified component mass.
+- Game difficulty multipliers.
+- Event probabilities.
+- Scoring weights.
+
+Gameplay assumptions must never be presented as measured NASA data.
+
+## 8.2 NASA Resource Mapping
+
+| NASA Resource | Information | ASTRA Application | Priority |
+|---|---|---|---|
+| Lunar Reconnaissance Orbiter (LRO) | Lunar environmental and surface datasets | Lunar mission environment | High |
+| LOLA | Lunar elevation and topography | Landing site and terrain evaluation | High |
+| LROC | Lunar surface imagery | Site visualization | High |
+| Diviner | Lunar surface thermal observations | Thermal environment | High |
+| LCRT NIAC Research | Lunar radio telescope concept | Scientific objective and architecture | High |
+| NASA Small Spacecraft Technology | Spacecraft engineering references | Subsystem parameters and communication models | High |
+| NASA SCaN | Space communication systems | Communication architecture | High |
+| NASA NAIF SPICE | Geometry and ephemeris tools | Orbit and communication geometry | Medium |
+| JPL Horizons | Celestial positions and ephemeris | Time-dependent mission geometry | Medium |
+| NASA DUST | Lunar environment simulation tool | 3D visualization reference | Future |
+
+## 8.3 Data-to-Gameplay Mapping
+
+| Game Parameter | Reference | Processing | Game Variable |
+|---|---|---|---|
+| Landing site elevation | LOLA | Extract and normalize elevation | `siteElevation` |
+| Terrain condition | LOLA / LROC | Terrain classification | `terrainDifficulty` |
+| Surface temperature | Diviner | Extract representative temperature conditions | `surfaceTemperature` |
+| Lunar environment | LRO datasets | Curated mission environment | `environmentProfile` |
+| Orbit geometry | SPICE / Horizons | Precompute selected geometry profiles | `orbitProfile` |
+| Communication model | NASA SCaN and technical references | Simplified link budget | `linkMargin` |
+| Scientific architecture | LCRT NIAC report | Translate concept into mission requirements | `scienceRequirements` |
+| Spacecraft parameters | NASA technical references | Create documented component specifications | `componentSpecs` |
+
+## 8.4 Priority Data Integration for MVP
+
+The MVP should implement a curated and documented subset of NASA resources.
+
+### Dataset 1 — Lunar Terrain
+
+Source: NASA LRO / LOLA / LROC.
+
+Purpose:
+- Display selected lunar locations.
+- Evaluate terrain conditions.
+- Influence landing difficulty.
+
+### Dataset 2 — Lunar Thermal Environment
+
+Source: LRO Diviner.
+
+Purpose:
+- Define representative thermal conditions.
+- Influence power and thermal management decisions.
+- Introduce operational constraints.
+
+### Dataset 3 — LCRT Scientific Concept
+
+Source: NASA NIAC LCRT Phase II Report.
+
+Purpose:
+- Define scientific objectives.
+- Inform antenna and reflector architecture.
+- Define the mission's conceptual deployment requirements.
+
+### Dataset 4 — Communication Engineering
+
+Source: NASA SCaN and NASA Small Spacecraft Technology references.
+
+Purpose:
+- Define a simplified communication model.
+- Evaluate link capability.
+- Determine data transmission limitations.
+
+### Dataset 5 — Orbital Geometry
+
+Source: NASA NAIF SPICE or JPL Horizons.
+
+Purpose:
+- Provide predefined geometry profiles.
+- Support communication window and orbital planning mechanics.
+
+For the MVP, geometry can be precomputed or simplified. A full real-time orbital mechanics engine is not required.
+
+## 8.5 NASA Data Attribution
+
+The game must include a Mission Encyclopedia or Sources panel.
+
+Each NASA-derived parameter should include:
+- Source organization.
+- Mission or instrument.
+- Dataset or publication.
+- Source link.
+- Data access date, when applicable.
+- Processing method.
+- Game variable affected.
+- Simplification or assumption notes.
+
+NASA branding and attribution must follow the applicable NASA usage and media guidelines. ASTRA must not imply that NASA officially endorses the game.
+
+---
+
+# 9. MISSION SIMULATION ENGINE
+
+## 9.1 Simulation Architecture
+
+The simulation engine must be modular and independent from the user interface.
+
+It receives:
+- Mission configuration.
+- Selected components.
+- Mission environment.
+- Player decisions.
+- Current simulation state.
+
+It produces:
+- Updated resources.
+- Mission progress.
+- Event triggers.
+- Subsystem status.
+- Scientific performance.
+- Mission outcome.
+
+## 9.2 Mission States
+
+1. Mission Preparation.
+2. Launch.
+3. Transit.
+4. Orbital Arrival.
+5. Descent or Deployment.
+6. Surface Construction.
+7. Scientific Operations.
+8. Mission Completion.
+
+Not every mission scenario must use all states.
+
+## 9.3 Simulation Variables
+
+The simulator tracks:
+
+- Current mission phase.
+- Elapsed mission time.
+- Remaining budget.
+- Current spacecraft mass.
+- Remaining energy.
+- Power balance.
+- Remaining propellant.
+- Data generated.
+- Data stored.
+- Data transmitted.
+- Communication status.
+- Instrument status.
+- Deployment progress.
+- Mission risk.
+- Scientific progress.
+
+## 9.4 Mission Event System
+
+Events are triggered by mission conditions and player decisions.
+
+Example events:
+
+| Event | Possible Cause | Consequence |
+|---|---|---|
+| Solar panel deployment failure | Deployment risk | Reduced power generation |
+| Battery degradation | Operating environment or event | Reduced energy storage |
+| Communication blackout | Geometry or relay availability | Delayed data transmission |
+| Instrument overheating | Thermal constraints | Reduced instrument uptime |
+| Robotic deployment delay | Construction risk | Reduced observation time |
+| Data storage overflow | Excess data generation | Potential loss of observations |
+| Successful calibration | Instrument operation | Improved data quality |
+| Successful observation window | Suitable operating conditions | Scientific progress |
+
+Events should have understandable causes and consequences.
+
+## 9.5 Failure Conditions
+
+Examples:
+- Spacecraft mass exceeds launch capacity.
+- Energy reserves become insufficient.
+- Propellant is inadequate for required maneuvers.
+- Landing system cannot deliver the required payload.
+- Communication capacity is insufficient.
+- Data storage becomes full.
+- Required scientific instruments become unavailable.
+- Mission duration expires before required objectives are completed.
+
+Failure must never be a meaningless Game Over.
+
+The game should provide a diagnosis and explain which engineering decisions contributed to the result.
+
+## 9.6 Simplified Simulation Models
+
+The MVP uses transparent, deterministic models where possible.
+
+**Mass Model**
+
+Sum the mass of all selected components and compare it with the relevant vehicle capacity.
+
+**Power Model**
+
+Compare available generation with active system demand.
+
+**Energy Model**
+
+Update stored energy using generation and consumption over each simulation interval.
+
+**Data Model**
+
+Calculate generated, stored, and transmitted data independently.
+
+**Communication Model**
+
+Evaluate whether the selected link can support the required transmission during the available window.
+
+**Timeline Model**
+
+Accumulate mission phase durations and compare them with the mission deadline.
+
+**Thermal Model**
+
+Use curated environment conditions and simplified equipment operating limits to generate thermal warnings and events.
+
+All formulas must document their assumptions and units.
+
+---
+
+# 10. MISSION EVALUATION AND SCORING
+
+## 10.1 Evaluation Categories
+
+Suggested scoring weights:
+
+| Category | Weight |
+|---|---:|
+| Mission Objective Completion | 30% |
+| Engineering Performance | 25% |
+| Scientific Value | 20% |
+| Resource Efficiency | 15% |
+| Risk Management | 10% |
+| **Total** | **100%** |
+
+These weights are proposed gameplay values, not official NASA evaluation criteria.
+
+## 10.2 Mission Performance Metrics
+
+### Mission Completion
+- Required objectives completed.
+- Mission duration achieved.
+- Required deployment completed.
+
+### Engineering Performance
+- Mass compatibility.
+- Power and energy balance.
+- Propulsion feasibility.
+- Thermal management.
+- Communication capability.
+
+### Scientific Value
+- Observation time achieved.
+- Instrument uptime.
+- Valid data collected.
+- Data completeness.
+- Scientific requirements satisfied.
+
+### Resource Efficiency
+- Budget utilization.
+- Energy efficiency.
+- Mass efficiency.
+- Communication efficiency.
+
+### Risk Management
+- Critical failures.
+- Recovery performance.
+- Redundancy.
+- Remaining operational reserves.
+
+## 10.3 Mission Ratings
+
+| Score | Rating |
+|---|---|
+| 90–100 | Outstanding Mission |
+| 75–89 | Successful Mission |
+| 60–74 | Partial Success |
+| Below 60 | Mission Failure |
+
+The final report must explain the contribution of each category.
+
+Players should be rewarded for achieving scientific objectives efficiently, not simply for spending the least amount of money.
+
+## 10.4 Multiple Valid Solutions
+
+There must not be only one optimal configuration.
+
+Different architectures may achieve mission success through different trade-offs.
+
+For example:
+- A more expensive architecture may provide greater reliability.
+- A lightweight architecture may reduce launch cost but require careful power management.
+- A relay-based architecture may improve communication but add mass and complexity.
+- A larger scientific payload may increase scientific value but reduce resource margins.
+
+The scoring system should recognize multiple valid engineering solutions.
+
+---
+
+# 11. GAME MODES AND COOPERATIVE GAMEPLAY
+
+## 11.1 Campaign Mode
+
+Players complete a sequence of future mission scenarios.
+
+Proposed progression:
+
+1. LUNAR ECHO — Lunar Radio Observatory.
+2. EUROPA DEEP — Subsurface Ocean Exploration.
+3. TITAN SWARM — Autonomous Aerial Exploration.
+4. ASTEROID NETWORK — Distributed Asteroid Exploration.
+5. URANUS FRONTIER — Outer Planet Exploration.
+
+Only LUNAR ECHO is required for the MVP. Other missions are planned expansions.
+
+## 11.2 Sandbox Mode
+
+Players design missions with fewer predefined restrictions.
+
+They can:
+- Select available components.
+- Experiment with configurations.
+- Change mission objectives.
+- Compare mission results.
+- Explore alternative mission architectures.
+
+## 11.3 Cooperative Mode
+
+Supports 1–4 players.
+
+Proposed roles:
+
+**Mission Director**
+- Manages mission priorities.
+- Oversees requirements.
+- Coordinates decisions.
+
+**Systems Engineer**
+- Designs spacecraft architecture.
+- Manages mass, power, and subsystem compatibility.
+
+**Science Officer**
+- Defines scientific objectives.
+- Selects instruments.
+- Evaluates scientific results.
+
+**Operations Engineer**
+- Manages mission timeline.
+- Monitors communication and data.
+- Handles operational events.
+
+### Collaboration Mechanics
+
+Cooperative mode must involve actual collaboration rather than simply displaying four role names.
+
+Players should:
+- Review shared mission requirements.
+- Propose subsystem configurations.
+- Discuss engineering trade-offs.
+- Negotiate budget allocation.
+- Resolve conflicting priorities.
+- Approve the final mission configuration.
+
+Example negotiation:
+
+The Science Officer requests an additional scientific instrument, while the Systems Engineer warns that the spacecraft is approaching its mass limit. The Mission Director must decide whether to increase the budget, remove another component, or change the launch architecture.
+
+### MVP Implementation
+
+The MVP supports local cooperative play using one shared browser session.
+
+Players can take turns making decisions and reviewing proposals.
+
+Real-time online multiplayer, accounts, and remote collaboration are future features.
+
+---
+
+# 12. USER INTERFACE AND USER EXPERIENCE
+
+## 12.1 Main Menu
+
+Elements:
+- Start Mission.
+- Campaign.
+- Sandbox.
+- Cooperative Mode.
+- How to Play.
+- Mission Encyclopedia.
+- Settings.
+
+## 12.2 Mission Briefing Screen
+
+Elements:
+- Destination visualization.
+- Mission background.
+- Scientific objectives.
+- Mission requirements.
+- Budget.
+- Mission duration.
+- NASA references.
+- Success criteria.
+
+## 12.3 Mission Designer Screen
+
+Main elements:
+- Component library.
+- Spacecraft architecture.
+- Launch vehicle selector.
+- Orbit and trajectory selector.
+- Resource dashboard.
+- Budget monitor.
+- Engineering warnings.
+- Mission validation.
+
+## 12.4 Mission Control Screen
+
+Main elements:
+- Mission timeline.
+- Spacecraft visualization.
+- Current mission phase.
+- Resource monitoring.
+- Communication status.
+- Data storage and transmission.
+- Event notifications.
+- Player decisions.
+
+## 12.5 Mission Report Screen
+
+Elements:
+- Mission outcome.
+- Overall score.
+- Scientific achievements.
+- Engineering performance.
+- Resource efficiency.
+- Risk analysis.
+- NASA data references.
+- Failure analysis.
+- Redesign recommendations.
+
+## 12.6 Mission Encyclopedia
+
+Contains:
+- Scientific concepts.
+- Engineering terminology.
+- Spacecraft components.
+- NASA mission references.
+- NASA datasets.
+- Simplified equations.
+- Source attribution.
+
+The encyclopedia should make learning accessible without interrupting gameplay.
+
+---
+
+# 13. TECHNICAL ARCHITECTURE
+
+## 13.1 Recommended Technology Stack
+
+**Frontend**
+- React.
+- TypeScript.
+- Vite.
+- Tailwind CSS.
+
+**Visualization**
+- Three.js or React Three Fiber.
+- Recharts for resource monitoring.
+- Lightweight 2D charts and diagrams.
+
+**Simulation**
+- Modular TypeScript simulation engine.
+
+**Backend**
+- Not required for the MVP.
+- Optional Node.js API for future online services.
+
+**Persistence**
+- LocalStorage for basic settings and small save data.
+- IndexedDB for larger mission state and cached datasets.
+
+**Database**
+- No server database required for MVP.
+- PostgreSQL can be introduced for future accounts, multiplayer, and community features.
+
+**Deployment**
+- Vercel or another static web hosting provider.
+
+## 13.2 System Architecture
+
+The application is divided into six layers:
+
+1. **Presentation Layer** — Screens, UI, controls, and visualizations.
+2. **Game Logic Layer** — Player actions, mission progression, and scoring.
+3. **Simulation Layer** — Engineering calculations and mission events.
+4. **Mission Data Layer** — Mission definitions and component specifications.
+5. **NASA Data Layer** — Curated NASA datasets and source metadata.
+6. **Persistence Layer** — Save files, mission reports, and player progress.
+
+The simulation engine must remain independent of the user interface so that calculations can be tested separately.
+
+## 13.3 Proposed Project Structure
+
+```text
+astra-beyond-the-future/
+│
+├── public/
+│   ├── assets/
+│   │   ├── images/
+│   │   ├── icons/
+│   │   └── models/
+│   └── data/
+│
+├── src/
+│   ├── app/
+│   │   ├── App.tsx
+│   │   └── routes.tsx
+│   │
+│   ├── components/
+│   │   ├── common/
+│   │   ├── dashboard/
+│   │   ├── spacecraft/
+│   │   └── simulation/
+│   │
+│   ├── features/
+│   │   ├── briefing/
+│   │   ├── mission-design/
+│   │   ├── launch-planning/
+│   │   ├── orbit-planning/
+│   │   ├── mission-control/
+│   │   ├── cooperative/
+│   │   └── mission-report/
+│   │
+│   ├── engine/
+│   │   ├── simulation/
+│   │   ├── resources/
+│   │   ├── validation/
+│   │   ├── events/
+│   │   └── scoring/
+│   │
+│   ├── data/
+│   │   ├── missions/
+│   │   ├── components/
+│   │   ├── launch-vehicles/
+│   │   ├── orbit-profiles/
+│   │   └── nasa-sources/
+│   │
+│   ├── services/
+│   │   ├── nasa-data/
+│   │   └── persistence/
+│   │
+│   ├── types/
+│   ├── utils/
+│   └── main.tsx
+│
+├── tests/
+│   ├── simulation/
+│   ├── validation/
+│   └── scoring/
+│
+├── documentation/
+│   ├── GDD.md
+│   ├── NASA-DATA-MAPPING.md
+│   └── SIMULATION-SPECIFICATION.md
+│
+├── package.json
+└── README.md
+```
+
+## 13.4 Core Data Entities
+
+The MVP can use local JSON and TypeScript types.
+
+**Mission**
+- ID.
+- Name.
+- Destination.
+- Scientific objectives.
+- Requirements.
+- Budget.
+- Duration.
+- Success criteria.
+
+**Component**
+- ID.
+- Name.
+- Category.
+- Mass.
+- Power demand or generation.
+- Cost.
+- Reliability.
+- Compatibility.
+- Source classification.
+
+**Launch Vehicle**
+- ID.
+- Name.
+- Payload capacity.
+- Cost.
+- Reliability.
+- Compatible destination profiles.
+
+**Orbit Profile**
+- ID.
+- Name.
+- Mission compatibility.
+- Transfer duration.
+- Communication characteristics.
+- Propulsion requirements.
+
+**NASA Source**
+- ID.
+- Organization.
+- Mission or instrument.
+- Dataset or document.
+- URL.
+- Parameter supported.
+- Processing notes.
+
+**Mission State**
+- Current phase.
+- Elapsed time.
+- Resource values.
+- Subsystem states.
+- Scientific progress.
+- Event history.
+
+**Mission Report**
+- Final outcome.
+- Score.
+- Scientific performance.
+- Engineering performance.
+- Resource efficiency.
+- Failure diagnosis.
+
+---
+
+# 14. MVP SCOPE
+
+## 14.1 Required MVP Features
+
+The first playable version must include:
+
+1. One complete mission scenario: LUNAR ECHO.
+2. Mission briefing and measurable objectives.
+3. Component library.
+4. At least five configurable spacecraft subsystem categories.
+5. Launch vehicle selection.
+6. Predefined orbit or trajectory selection.
+7. Budget management.
+8. Mass calculation.
+9. Power and energy calculation.
+10. Propellant tracking.
+11. Data generation and storage.
+12. Basic communication validation.
+13. Mission duration management.
+14. Mission validation.
+15. Mission simulation with multiple phases.
+16. At least three meaningful mission events.
+17. Mission success and failure outcomes.
+18. Mission evaluation report.
+19. NASA source attribution.
+20. At least one real NASA dataset or curated NASA-derived dataset that materially influences gameplay.
+
+## 14.2 MVP NASA Integration
+
+Recommended implementation:
+
+- Curated LOLA or LRO-derived lunar site data for location selection.
+- Diviner-derived thermal environment profiles for thermal gameplay.
+- LCRT NIAC research for scientific objectives and architecture.
+- NASA technical references for communication and spacecraft engineering.
+
+For hackathon reliability, datasets should be downloaded, processed, and cached before the demonstration wherever possible.
+
+## 14.3 Out of Scope for MVP
+
+The MVP does not require:
+
+- Full professional orbital mechanics.
+- Detailed computational fluid dynamics.
+- Full thermal physics simulation.
+- Real-time online multiplayer.
+- Multiple fully developed planetary missions.
+- Complex 3D spacecraft assembly.
+- Real-time NASA API dependency during every simulation.
+- Professional spacecraft engineering accuracy.
+
+The MVP prioritizes a complete, understandable, and scientifically grounded gameplay loop.
+
+---
+
+# 15. DEVELOPMENT ROADMAP
+
+## Stage 1 — Research and Specification
+
+- Finalize LUNAR ECHO objectives.
+- Review NASA research and datasets.
+- Create NASA Data Mapping.
+- Define component specifications.
+- Define simulation assumptions.
+- Define mission validation rules.
+
+**Deliverable:** Mission and simulation specification.
+
+## Stage 2 — Core Game Development
+
+- Build the main interface.
+- Build mission briefing.
+- Build component library.
+- Implement resource dashboard.
+- Implement spacecraft configuration.
+- Implement launch vehicle and orbit selection.
+
+**Deliverable:** Functional mission designer.
+
+## Stage 3 — Simulation Development
+
+- Implement mission state machine.
+- Implement resource consumption.
+- Implement data and communication models.
+- Implement mission events.
+- Implement success and failure conditions.
+
+**Deliverable:** Playable mission simulation.
+
+## Stage 4 — NASA Data Integration
+
+- Process curated lunar datasets.
+- Connect site selection to terrain information.
+- Integrate thermal environment profiles.
+- Add source attribution.
+- Verify data processing and units.
+
+**Deliverable:** NASA-informed gameplay.
+
+## Stage 5 — User Experience and Cooperative Play
+
+- Improve mission control dashboard.
+- Add educational explanations.
+- Add mission reports.
+- Implement shared-session cooperative decisions.
+- Improve visual feedback.
+
+**Deliverable:** Complete playable experience.
+
+## Stage 6 — Testing and Presentation
+
+- Test valid and invalid configurations.
+- Test multiple successful architectures.
+- Test mission failure scenarios.
+- Verify simulation calculations.
+- Verify NASA source attribution.
+- Prepare a short gameplay demonstration.
+
+**Deliverable:** Hackathon submission build.
+
+---
+
+# 16. SUCCESS METRICS
+
+The project is considered functionally successful when:
+
+1. A new player can understand the mission objective without external assistance.
+2. A player can design a complete mission.
+3. Launch vehicle selection affects mission feasibility.
+4. Orbit selection affects mission constraints.
+5. Resource changes are visible immediately.
+6. Data generation, storage, and transmission are distinguishable.
+7. Mission duration affects mission success.
+8. Every major design decision has a meaningful consequence.
+9. At least two different configurations can achieve mission success.
+10. The simulation can produce both success and failure.
+11. The evaluation report explains why the outcome occurred.
+12. NASA-derived data or documented research materially informs gameplay.
+13. Players can identify the scientific and engineering concepts they learned.
+
+---
+
+# 17. FUTURE EXPANSION
+
+Potential future features:
+
+- EUROPA DEEP mission.
+- TITAN SWARM mission.
+- ASTEROID NETWORK mission.
+- URANUS FRONTIER mission.
+- Advanced orbital mechanics.
+- More detailed spacecraft configuration.
+- Online cooperative multiplayer.
+- Procedurally generated mission challenges.
+- Advanced environmental simulation.
+- Additional NASA planetary datasets.
+- Classroom and educator mode.
+- Community mission sharing.
+- Mission comparison and leaderboard.
+
+Each additional mission should introduce new scientific objectives and engineering constraints rather than simply changing the destination's visual appearance.
+
+---
+
+# 18. SCIENTIFIC INTEGRITY AND DATA POLICY
+
+ASTRA follows six principles:
+
+**1. NASA First**
+
+Use relevant NASA research and public datasets as the primary scientific reference.
+
+**2. Traceable Parameters**
+
+Every NASA-derived parameter must have a documented source.
+
+**3. Separate Evidence from Assumptions**
+
+Distinguish measured observations, engineering references, derived estimates, and gameplay assumptions.
+
+**4. Simplified but Defensible**
+
+Simplified calculations are acceptable when their assumptions and limitations are documented.
+
+**5. Data-Driven Gameplay**
+
+NASA data must influence player decisions or mission outcomes.
+
+**6. Transparent Attribution**
+
+Players must be able to discover which NASA sources support the mission and its simulation.
+
+---
+
+# 19. FINAL PRODUCT DEFINITION
+
+ASTRA: BEYOND THE FUTURE is an educational space mission design and simulation game.
+
+It is not intended to be a professional aerospace engineering tool or an exact NASA mission planning system.
+
+Instead, it introduces the reasoning behind aerospace mission design through accessible, simplified, and scientifically grounded engineering models.
+
+The game combines:
+- Real NASA scientific data.
+- NASA engineering research.
+- Hypothetical future mission scenarios.
+- Interactive design decisions.
+- Resource management.
+- Mission simulation.
+- Collaborative problem-solving.
+- Educational feedback.
+
+Its central promise is:
+
+> **Players should finish a mission understanding not only whether their spacecraft succeeded, but why their engineering decisions made that success or failure possible.**
+
+---
+
+# 20. REFERENCE RESOURCES
+
+The following resources form the initial research foundation for ASTRA.
+
+## Lunar Science and Environment
+
+- NASA Lunar Reconnaissance Orbiter: https://science.nasa.gov/mission/lro/
+- LRO Planetary Data System Archive: https://pds-geosciences.wustl.edu/missions/lro/
+- Lunar Orbital Data Explorer: https://ode.rsl.wustl.edu/moon/
+- Diviner Data: https://www.diviner.ucla.edu/data
+- LROC: https://www.lroc.asu.edu/
+
+## Mission Concept and Science
+
+- NASA NIAC LCRT Phase II Report: https://ntrs.nasa.gov/citations/20250001334
+- NASA LCRT Concept: https://www.nasa.gov/general/lunar-crater-radio-telescope-lcrt-on-the-far-side-of-the-moon/
+- JPL LCRT Robotics: https://robotics.jpl.nasa.gov/what-we-do/research-tasks/lunar-crater-radio-telescope-lcrt-farside-moon/
+
+## Mission Geometry and Navigation
+
+- NASA NAIF SPICE: https://naif.jpl.nasa.gov/naif/
+- JPL Horizons: https://ssd.jpl.nasa.gov/horizons/
+- Horizons API Documentation: https://ssd-api.jpl.nasa.gov/doc/horizons.html
+
+## Communication and Engineering
+
+- NASA SCaN: https://www.nasa.gov/directorates/space-operations/space-communications-and-navigation-scan-program/
+- NASA Communicating with Missions: https://www.nasa.gov/communicating-with-missions/
+- NASA Small Spacecraft Technology: https://www.nasa.gov/smallsat-institute/
+
+## Simulation and Visualization
+
+- NASA DUST Software: https://software.nasa.gov/software/MSC-27522-1
+- NASA Planetary Data Tools: https://planetary.data.nasa.gov/use-data
+
+---
+
+**END OF DOCUMENT**
+
+**ASTRA: BEYOND THE FUTURE — GDD Version 1.2**  
+*Design Tomorrow. Explore Beyond.*

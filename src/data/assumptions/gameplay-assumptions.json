@@ -1,0 +1,38 @@
+{
+  "disclaimer": {
+    "classification": "fictional-gameplay-values",
+    "note": "Validation uses simplified gameplay assumptions chosen for learning and balance. They are not NASA engineering standards or real mission requirements."
+  },
+  "values": {
+    "massMarginFraction": 0.1,
+    "budgetReserveFraction": 0.1,
+    "powerMarginFraction": 0.1,
+    "lunarNightHours": 354,
+    "survivalBusLoadFraction": 0.5,
+    "batteryUsableFraction": 0.8,
+    "energyMarginFraction": 0.1,
+    "propellantMarginFraction": 0.1,
+    "relayContactHoursPerDay": 8,
+    "commsMarginFraction": 0.2,
+    "relayOutageDays": 2,
+    "constructionWorkDays": 60,
+    "maxTransferFraction": 0.1,
+    "scheduleMarginFraction": 0.1
+  },
+  "descriptions": {
+    "massMarginFraction": "Keep 10% of launch capacity free for mass growth.",
+    "budgetReserveFraction": "Keep 10% of the budget as a cost reserve.",
+    "powerMarginFraction": "Daytime generation should exceed demand by 10%.",
+    "lunarNightHours": "Lunar night length used by the game (about 14.75 Earth days).",
+    "survivalBusLoadFraction": "At night the bus runs at 50% load; thermal and battery loads stay on; other systems sleep.",
+    "batteryUsableFraction": "Only 80% of rated battery capacity is usable.",
+    "energyMarginFraction": "Usable storage should exceed the night energy need by 10%.",
+    "propellantMarginFraction": "Carry 10% more propellant than the transfer requires.",
+    "relayContactHoursPerDay": "The relay orbiter is in view 8 hours per day.",
+    "commsMarginFraction": "Downlink capacity should exceed daily data generation by 20%.",
+    "relayOutageDays": "Onboard storage must buffer 2 days of data during relay outages.",
+    "constructionWorkDays": "Antenna deployment takes 60 robot-days of work, shared across robotic units.",
+    "maxTransferFraction": "Transfers longer than 10% of mission duration eat into operations time.",
+    "scheduleMarginFraction": "The timeline should leave 10% of mission duration as schedule margin."
+  }
+}

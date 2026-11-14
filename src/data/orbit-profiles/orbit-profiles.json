@@ -1,0 +1,5 @@
+[
+  { "id": "orb-direct", "name": "Direct Transfer", "transferDays": 4, "propellantKgPerTonneDry": 1100, "compatibleMissionIds": ["lunar-echo"], "description": "Fast transfer, higher propellant demand." },
+  { "id": "orb-phasing", "name": "Phasing Loop Transfer", "transferDays": 21, "propellantKgPerTonneDry": 950, "compatibleMissionIds": ["lunar-echo"], "description": "More time, lower propellant demand." },
+  { "id": "orb-low-energy", "name": "Low-Energy Transfer", "transferDays": 95, "propellantKgPerTonneDry": 800, "compatibleMissionIds": ["lunar-echo"], "description": "Minimal propellant, long cruise." }
+]
