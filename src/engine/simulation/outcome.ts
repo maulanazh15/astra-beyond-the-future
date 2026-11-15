@@ -1,17 +1,47 @@
 import type { DiagnosisItem, FailureReason, MissionOutcome, SimulationState } from '../../types/simulation'
+import { isSurfacePhase } from './resources'
 import { phaseLabels } from './setup'
 import type { SimulationSetup } from './setup'
 
+/** Tolerance for floating-point drift when a resource is used up exactly. */
+const EPSILON = 1e-6
+
 /** Immediate, mission-ending conditions checked after every step. */
 export function detectFailure(state: SimulationState, setup: SimulationSetup): FailureReason | undefined {
-  if (state.remainingPropellant < 0) return 'propellantDepleted'
-  if (state.remainingEnergy < 0) return 'powerDepleted'
+  if (state.phase === 'launch') {
+    if (!setup.launchVehicleCompatible) return 'launchVehicleIncompatible'
+    if (setup.launchMassKg > setup.launchCapacityKg + EPSILON) return 'launchOverCapacity'
+  }
+  if (state.remainingPropellant < -EPSILON) return 'propellantDepleted'
+  // Same rule as thermal validation: night heat below need means electronics drop below survival temperature.
+  if (state.isLunarNight && isSurfacePhase(state.phase) && setup.nightHeatSupplyW < setup.nightHeatNeedW - EPSILON) {
+    return 'electronicsFrozen'
+  }
+  if (state.remainingEnergy < -EPSILON) return 'powerDepleted'
   if (state.remainingBudget < 0) return 'budgetExhausted'
   if (state.phase === 'construction' && setup.constructionPercentPerDay === 0) return 'noConstructionCapability'
   return undefined
 }
 
-const failureDiagnosis: Record<FailureReason, (state: SimulationState) => DiagnosisItem> = {
+const failureDiagnosis: Record<FailureReason, (state: SimulationState, setup: SimulationSetup) => DiagnosisItem> = {
+  launchOverCapacity: () => ({
+    title: 'Launch vehicle overloaded',
+    cause: 'The spacecraft plus propellant was heavier than the launcher could lift, so it never reached orbit.',
+    subsystem: 'launchVehicle',
+    recommendation: 'Remove or lighten components, or choose a larger launch vehicle.',
+  }),
+  launchVehicleIncompatible: () => ({
+    title: 'Launch vehicle cannot fly this transfer',
+    cause: 'The selected launcher does not support the chosen transfer orbit.',
+    subsystem: 'launchVehicle',
+    recommendation: 'Choose a compatible launch vehicle or a different transfer orbit.',
+  }),
+  electronicsFrozen: (s, setup) => ({
+    title: 'Electronics froze during the lunar night',
+    cause: `On day ${s.elapsedTime} the lander had ${Math.round(setup.nightHeatSupplyW)} W of night heat but needed ${Math.round(setup.nightHeatNeedW)} W to keep its electronics above survival temperature.`,
+    subsystem: 'thermal',
+    recommendation: 'Add insulation, radioisotope heater units, or electric heaters (with battery to match).',
+  }),
   propellantDepleted: (s) => ({
     title: 'Propellant depleted',
     cause: `The tanks ran dry during ${phaseLabels[s.phase]}, so the spacecraft could not complete its maneuvers.`,
@@ -46,7 +76,7 @@ const failureDiagnosis: Record<FailureReason, (state: SimulationState) => Diagno
 export function diagnoseMission(state: SimulationState, setup: SimulationSetup): DiagnosisItem[] {
   const { mission } = setup
   const items: DiagnosisItem[] = []
-  if (state.failureReason) items.push(failureDiagnosis[state.failureReason](state))
+  if (state.failureReason) items.push(failureDiagnosis[state.failureReason](state, setup))
 
   if (!state.failureReason && state.constructionProgress < 100) {
     items.push({

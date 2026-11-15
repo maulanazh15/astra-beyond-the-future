@@ -8,6 +8,7 @@ import {
   Gauge,
   Info,
   MapPin,
+  Mountain,
   ShieldAlert,
   Target,
   Trophy,
@@ -18,11 +19,17 @@ import { PageHeader } from '../../components/common/PageHeader'
 import { Panel } from '../../components/common/Panel'
 import { StatTile } from '../../components/common/StatTile'
 import { useMission } from '../../components/layout/useMission'
-import { missionDisclaimer } from '../../data'
+import { getSite, getSource, missionDisclaimer } from '../../data'
 import { formatDuration, formatMUsd } from '../../utils/format'
+import { useMissionSession } from '../mission-session/missionSessionContext'
+import { MissionOverview3D } from '../visualization/LazyScenes'
+import { sceneSiteFrom } from '../visualization/utilities/sceneSite'
 
 export function MissionBriefingPage() {
   const mission = useMission()
+  const { siteId } = useMissionSession()
+  // The overview shows the landing site currently chosen in the designer.
+  const site = getSite(siteId) ?? getSite(mission.site.defaultSiteId)
 
   return (
     <>
@@ -48,6 +55,12 @@ export function MissionBriefingPage() {
         <StatTile label="Duration" value={formatDuration(mission.durationDays)} icon={CalendarClock} />
         <StatTile label="Difficulty" value={mission.difficulty} icon={Gauge} />
       </div>
+
+      {site && (
+        <Panel title="Mission Overview" icon={Mountain} className="mb-6">
+          <MissionOverview3D site={sceneSiteFrom(site)} />
+        </Panel>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
@@ -111,11 +124,22 @@ export function MissionBriefingPage() {
             </ul>
           </Panel>
           <Panel title="NASA References">
-            <ul className="space-y-1.5 text-xs text-slate-400">
-              {mission.sources.map((source) => (
-                <li key={source}>{source}</li>
-              ))}
+            <ul className="space-y-2 text-xs text-slate-400">
+              {mission.sourceIds.map((id) => {
+                const source = getSource(id)
+                return source ? (
+                  <li key={id}>
+                    <a href={source.url} target="_blank" rel="noreferrer" className="text-slate-300 hover:text-cyan-300">
+                      {source.title}
+                    </a>
+                    <span className="block text-slate-500">{source.missionOrInstrument}</span>
+                  </li>
+                ) : null
+              })}
             </ul>
+            <ButtonLink to={paths.encyclopedia} variant="ghost" icon={BookOpen} className="mt-3 -ml-2">
+              Sources &amp; processing notes
+            </ButtonLink>
           </Panel>
         </div>
       </div>

@@ -17,6 +17,7 @@ export type MissionRequirement =
   | { id: string; kind: 'minNetPowerW'; label: string; target: number }
   | { id: string; kind: 'minEnergyStorageWh'; label: string; target: number }
   | { id: string; kind: 'requiredCategories'; label: string; categories: ComponentCategory[] }
+  | { id: string; kind: 'radioQuietSite'; label: string }
 
 export type Mission = {
   id: string
@@ -37,7 +38,13 @@ export type Mission = {
   requirements: MissionRequirement[]
   constraints: string[]
   successCriteria: string[]
-  sources: string[]
+  site: {
+    /** Site must be shielded from Earth radio noise (far side). */
+    requiresRadioQuiet: boolean
+    defaultSiteId: string
+  }
+  /** Ids in `data/nasa-sources`. */
+  sourceIds: string[]
 }
 
 export type LaunchVehicle = {

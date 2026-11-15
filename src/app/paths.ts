@@ -1,6 +1,9 @@
 export const paths = {
   home: '/',
   missions: '/missions',
+  encyclopedia: '/encyclopedia',
+  /** Development preview of 3D assets; not linked from the game UI. */
+  assetLab: '/lab/3d',
   briefing: (missionId: string) => `/missions/${missionId}/briefing`,
   designer: (missionId: string) => `/missions/${missionId}/design`,
   control: (missionId: string) => `/missions/${missionId}/control`,

@@ -15,6 +15,8 @@ export type ValidationCheckId =
   | 'communication'
   | 'dataStorage'
   | 'missionDuration'
+  | 'landingSite'
+  | 'thermalEnvironment'
 
 export type ValidationResult = {
   id: ValidationCheckId
@@ -44,4 +46,13 @@ export type GameplayAssumptions = {
   constructionWorkDays: number
   maxTransferFraction: number
   scheduleMarginFraction: number
+  baseHeatRejectionW: number
+  radiatorReferenceTempK: number
+  radiatorDeratingPerK: number
+  minRadiatorFactor: number
+  electronicsSurvivalTempK: number
+  thermalLossWPerK: number
+  thermalMarginFraction: number
+  landingSlopeMarginFraction: number
+  hazardAvoidanceSlopeReduction: number
 }

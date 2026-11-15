@@ -8,6 +8,7 @@ import {
 import { summarizeDesign } from '../../src/engine/resources/summarizeDesign'
 import { checkRequirements } from '../../src/engine/validation/checkRequirements'
 import type { ComponentCatalog, SpacecraftComponent } from '../../src/types/component'
+import type { LunarSite } from '../../src/types/environment'
 import type { Mission } from '../../src/types/mission'
 
 const part = (overrides: Partial<SpacecraftComponent> & Pick<SpacecraftComponent, 'id' | 'category'>): SpacecraftComponent => ({
@@ -100,6 +101,7 @@ describe('checkRequirements', () => {
       { id: 'm', kind: 'withinLaunchCapacity', label: '' },
       { id: 'e', kind: 'minEnergyStorageWh', label: '', target: 8000 },
       { id: 'c', kind: 'requiredCategories', label: '', categories: ['bus', 'power'] },
+      { id: 'r', kind: 'radioQuietSite', label: '' },
     ],
   } as Mission
   const vehicle = { id: 'lv', name: 'LV', payloadCapacityKg: 350, costMUsd: 10, reliability: 1 }
@@ -115,6 +117,22 @@ describe('checkRequirements', () => {
     const met = Object.fromEntries(
       checkRequirements(mission, summary, vehicle).map((s) => [s.requirement.id, s.met]),
     )
-    expect(met).toEqual({ b: true, m: false, e: true, c: false })
+    expect(met).toEqual({ b: true, m: false, e: true, c: false, r: false })
+  })
+
+  it('requires a radio-quiet site', () => {
+    const summary = summarizeDesign([], catalog)
+    const quiet = { radioQuiet: true, name: 'Far' } as LunarSite
+    const status = (site?: LunarSite) => checkRequirements(mission, summary, vehicle, { site }).find((s) => s.requirement.id === 'r')?.met
+    expect(status(quiet)).toBe(true)
+    expect(status({ ...quiet, radioQuiet: false })).toBe(false)
+    expect(status(undefined)).toBe(false)
+  })
+
+  it('counts loaded propellant toward launch capacity when given', () => {
+    const summary = summarizeDesign([{ componentId: 'bus-a', quantity: 1 }], catalog)
+    const fits = (launchMassKg?: number) => checkRequirements(mission, summary, vehicle, { launchMassKg }).find((s) => s.requirement.id === 'm')?.met
+    expect(fits(undefined)).toBe(summary.massKg <= 350)
+    expect(fits(351)).toBe(false)
   })
 })

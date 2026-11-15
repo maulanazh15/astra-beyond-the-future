@@ -26,7 +26,9 @@ export function ratingFor(total: number): MissionRating {
 /** Scores a finished (or failed) mission. Deterministic and UI-independent. */
 export function scoreMission(state: SimulationState, setup: SimulationSetup): MissionScore {
   const { mission } = setup
-  const failed = state.runStatus === 'failed'
+  const lost = state.runStatus === 'failed'
+  // A completed mission that delivered no science is also scored as a failure.
+  const failed = lost || state.outcome?.result === 'failure'
 
   // Objectives: partial credit for each of the three objectives.
   const objectiveRatios = [
@@ -40,7 +42,7 @@ export function scoreMission(state: SimulationState, setup: SimulationSetup): Mi
   // Engineering: penalties for anomalies and loss of the spacecraft.
   const criticalCount = state.eventLog.filter((e) => e.severity === 'critical').length
   const warningCount = state.eventLog.filter((e) => e.severity === 'warning').length
-  const engineering = clamp(100 - criticalCount * 25 - warningCount * 10 - (failed ? 40 : 0))
+  const engineering = clamp(100 - criticalCount * 25 - warningCount * 10 - (lost ? 40 : 0))
 
   // Science: return versus target, small bonus for exceeding it, penalty for lost data.
   const dataRatio = mission.dataReturnTargetGb > 0 ? state.dataTransmitted / mission.dataReturnTargetGb : 0
@@ -59,7 +61,7 @@ export function scoreMission(state: SimulationState, setup: SimulationSetup): Mi
 
   const categories: ScoreCategory[] = [
     { id: 'objectives', label: 'Objective Completion', score: objectives, weight: scoreWeights.objectives, note: `${objectivesMet} of 3 objectives fully met.` },
-    { id: 'engineering', label: 'Engineering Performance', score: engineering, weight: scoreWeights.engineering, note: `${criticalCount} critical and ${warningCount} warning anomalies${failed ? '; spacecraft lost' : ''}.` },
+    { id: 'engineering', label: 'Engineering Performance', score: engineering, weight: scoreWeights.engineering, note: `${criticalCount} critical and ${warningCount} warning anomalies${lost ? '; spacecraft lost' : ''}.` },
     { id: 'science', label: 'Scientific Value', score: science, weight: scoreWeights.science, note: `${Math.round(state.dataTransmitted).toLocaleString('en-US')} of ${mission.dataReturnTargetGb.toLocaleString('en-US')} Gb returned${state.dataLost > 0 ? `; ${Math.round(state.dataLost).toLocaleString('en-US')} Gb lost` : ''}.` },
     { id: 'efficiency', label: 'Resource Efficiency', score: efficiency, weight: scoreWeights.efficiency, note: `$${state.remainingBudget.toFixed(1)}M budget and ${Math.round(Math.max(0, state.remainingPropellant))} kg propellant left.` },
     { id: 'risk', label: 'Risk Management', score: risk, weight: scoreWeights.risk, note: `Final mission risk ${state.missionRisk.toFixed(1)}%.` },

@@ -245,3 +245,18 @@ describe('outcomes and diagnosis', () => {
     expect(end.outcome?.diagnosis.map((d) => d.subsystem)).toContain('communication')
   })
 })
+
+describe('MVP review regressions', () => {
+  it('does not fail when the tank holds exactly the propellant required', () => {
+    const exact = { ...reference, propellantLoadedKg: reference.propellantRequiredKg }
+    const end = run(exact)
+    expect(end.failureReason).toBeUndefined()
+    expect(end.remainingPropellant).toBeCloseTo(0, 6)
+  })
+
+  it('keeps radioisotope power running during launch', () => {
+    expect(phaseGenerationW('launch', false, noModifiers, { ...reference, nightGenerationW: 110 })).toBe(110)
+    const rpsOnly = makeSetup(['bus-small', 'prp-throttle', 'pwr-rps', 'com-xband', 'pay-dipole', 'lnd-legs', 'thm-passive', 'rob-winch'])
+    expect(run(rpsOnly).failureReason).toBeUndefined()
+  })
+})

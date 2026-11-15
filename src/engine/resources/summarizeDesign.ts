@@ -17,6 +17,11 @@ export function summarizeDesign(entries: DesignEntry[], catalog: ComponentCatalo
     dataGenerationGbPerDay: 0,
     nightGenerationW: 0,
     powerDemandByCategoryW: {},
+    maxLandingSlopeDeg: 0,
+    hazardAvoidance: false,
+    heatLossReduction: 0,
+    survivalHeatW: 0,
+    heatRejectionW: 0,
     reliability: 1,
     unitsByCategory: {},
   }
@@ -39,6 +44,11 @@ export function summarizeDesign(entries: DesignEntry[], catalog: ComponentCatalo
     if (component.generatesDuringNight) summary.nightGenerationW += component.powerGenerationW * qty
     summary.powerDemandByCategoryW[category] =
       (summary.powerDemandByCategoryW[category] ?? 0) + component.powerDemandW * qty
+    summary.maxLandingSlopeDeg = Math.max(summary.maxLandingSlopeDeg, component.maxLandingSlopeDeg ?? 0)
+    summary.hazardAvoidance ||= component.hazardAvoidance === true
+    summary.heatLossReduction = Math.max(summary.heatLossReduction, component.heatLossReduction ?? 0)
+    summary.survivalHeatW += (component.survivalHeatW ?? 0) * qty
+    summary.heatRejectionW += (component.heatRejectionW ?? 0) * qty
     summary.reliability *= component.reliability ** qty
     summary.unitsByCategory[category] = (summary.unitsByCategory[category] ?? 0) + qty
   }

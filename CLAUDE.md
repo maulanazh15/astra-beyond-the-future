@@ -7,50 +7,10 @@ Full design spec: `documentation/gdd.txt`. MVP mission: **LUNAR ECHO** (lunar fa
 
 Core loop: Discover → Define → Design → Plan → Validate → Launch → Operate → Evaluate → Redesign.
 
-## Tech Stack
+## Workflow
 
-- React 19 + TypeScript + Vite
-- Tailwind CSS v4 (via `@tailwindcss/vite`; `@import "tailwindcss"` in `src/index.css`, no config file)
-- React Router (`src/app/routes.tsx`, URL helpers in `src/app/paths.ts`)
-- Lucide React (icons), Recharts (resource charts)
-- Pure TypeScript simulation engine (no React, no DOM)
-- Local JSON data, LocalStorage persistence
-- Vitest (engine tests), Oxlint (lint)
-- No backend for MVP
-
-## Folder Structure
-
-```text
-src/
-  app/            App shell, top-level screen switching
-  components/     Reusable UI (common/, layout/, simulation/)
-  features/       Screen-level features (briefing, mission-design, launch-planning,
-                  orbit-planning, mission-control, mission-report)
-  engine/         Pure TS logic (design/, resources/, validation/, simulation/, events/, scoring/)
-  data/           Local JSON (missions/, components/, launch-vehicles/, orbit-profiles/, nasa-sources/)
-  services/       persistence/ (LocalStorage), nasa-data/ (local dataset loaders)
-  types/          Shared domain types (Mission, Component, LaunchVehicle, OrbitProfile,
-                  NasaSource, MissionState, MissionReport)
-  utils/          Small generic helpers
-tests/            Engine unit tests (simulation/, validation/, scoring/)
-documentation/    GDD and design specs
-```
-
-Create subfolders only when the first file needs them.
-
-## Commands
-
-```bash
-npm install        # install dependencies
-npm run dev        # dev server (http://localhost:5173)
-npm run build      # typecheck + production build
-npm run preview    # serve production build
-npm run lint       # oxlint
-npm run typecheck  # tsc -b
-npm test           # vitest run
-```
-
-Run `npm run build && npm run lint && npm test` before considering work done.
+- Create subfolders only when the first file needs them.
+- Run `npm run build && npm run lint && npm test` before considering work done.
 
 ## Architecture Rules
 
@@ -66,8 +26,10 @@ Run `npm run build && npm run lint && npm test` before considering work done.
 5. **Persistence goes through `src/services/persistence/`.** No direct `localStorage`
    calls elsewhere. Saved data includes a `version` field; parse defensively.
 6. **No external API calls.** NASA data is pre-downloaded, curated, and stored locally.
-7. **Every NASA-derived value cites a source** entry in `data/nasa-sources/`.
-   Simplifications must be labeled as gameplay approximations, not NASA predictions.
+7. **Every NASA-derived value cites a source** entry in `data/nasa-sources/`. Dataset values
+   are `SourcedValue`s labeled `source-derived`, `derived-estimate`, or `placeholder`, with
+   units and processing notes. Never mark a value source-derived unless it was checked
+   against the publication. Simplifications are gameplay approximations, not NASA predictions.
 8. **Scientific plausibility over precision.** Use simplified, documented models
    (see GDD §9.6); avoid professional-grade physics.
 
@@ -79,6 +41,7 @@ Run `npm run build && npm run lint && npm test` before considering work done.
 - Named exports (default export only for `App`).
 - Keep components small and reusable; move logic into hooks or the engine.
 - Style with Tailwind utility classes; no CSS modules or CSS-in-JS.
+- Tailwind v4 has no config file: theme tokens live in `@theme` in `src/index.css`.
 - Use Lucide icons; do not add other icon libraries.
 - Units explicit in names or types: `massKg`, `powerW`, `costMUsd`, `durationDays`.
 - Engine logic gets unit tests in `tests/` mirroring `src/engine/`.
@@ -90,6 +53,7 @@ Run `npm run build && npm run lint && npm test` before considering work done.
 - Local co-op only (shared screen); no online multiplayer.
 - No backend, accounts, or database; LocalStorage only (IndexedDB later if needed).
 - No live NASA API dependency during play.
-- No 3D spacecraft assembly (Three.js deferred).
+- 3D is display-only: `src/features/visualization/` (lazy-loaded; 2D screens import only
+  `LazyScenes.tsx`; see `documentation/3d-asset-pipeline.md`). No interactive 3D assembly yet.
 - Simplified orbital, thermal, and power models; not engineering-accurate.
 - English only (Indonesian localization later).

@@ -227,7 +227,8 @@
       "powerDemandW": 0,
       "powerGenerationW": 0,
       "reliability": 0.97,
-      "description": "Shock-absorbing legs for uneven ground."
+      "description": "Shock-absorbing legs for uneven ground.",
+      "maxLandingSlopeDeg": 12
     },
     {
       "id": "lnd-crush",
@@ -238,7 +239,8 @@
       "powerDemandW": 0,
       "powerGenerationW": 0,
       "reliability": 0.95,
-      "description": "Simple and light, less tolerant of slopes."
+      "description": "Simple and light, less tolerant of slopes.",
+      "maxLandingSlopeDeg": 6
     },
     {
       "id": "lnd-hda",
@@ -249,7 +251,8 @@
       "powerDemandW": 70,
       "powerGenerationW": 0,
       "reliability": 0.96,
-      "description": "Sensors that steer away from boulders and craters."
+      "description": "Sensors that steer away from boulders and craters.",
+      "hazardAvoidance": true
     },
     {
       "id": "thm-passive",
@@ -261,7 +264,8 @@
       "powerGenerationW": 0,
       "reliability": 0.98,
       "description": "Light and cheap, limited night survival.",
-      "heatRejectionW": 20
+      "heatRejectionW": 20,
+      "heatLossReduction": 0.65
     },
     {
       "id": "thm-heaters",
@@ -283,7 +287,8 @@
       "powerDemandW": 0,
       "powerGenerationW": 0,
       "reliability": 0.98,
-      "description": "Heat without electrical power."
+      "description": "Heat without electrical power.",
+      "survivalHeatW": 40
     },
     {
       "id": "thm-radiator",

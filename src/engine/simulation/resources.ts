@@ -47,15 +47,15 @@ export function phaseLoadW(phase: SimPhaseId, night: boolean, setup: SimulationS
   }
 }
 
-/** Generation (W): arrays are stowed during launch; solar is unavailable at night. */
+/** Generation (W): solar arrays are stowed during launch and dark at night; radioisotope power always runs. */
 export function phaseGenerationW(
   phase: SimPhaseId,
   night: boolean,
   state: Pick<SimulationState, 'modifiers'>,
   setup: SimulationSetup,
 ): number {
-  if (phase === 'launch' || phase === 'completion') return 0
-  const solar = night ? 0 : setup.solarGenerationW * state.modifiers.solarGenerationFactor
+  if (phase === 'completion') return 0
+  const solar = night || phase === 'launch' ? 0 : setup.solarGenerationW * state.modifiers.solarGenerationFactor
   return solar + setup.nightGenerationW
 }
 

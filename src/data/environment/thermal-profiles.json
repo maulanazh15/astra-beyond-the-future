@@ -1,0 +1,45 @@
+{
+  "note": "Representative surface-temperature extremes, by latitude band. Each value is labeled source-derived, derived-estimate, or placeholder. Local effects such as rocks, slopes, and shadowing are not modeled. Units: kelvin (K).",
+  "profiles": [
+    {
+      "id": "thermal-equatorial",
+      "name": "Equatorial",
+      "latitudeBand": "0–15°",
+      "dayMaxK": {
+        "value": 392,
+        "unit": "K",
+        "provenance": "source-derived",
+        "sourceIds": ["williams-2017"],
+        "processing": "Midpoint of the ~387–397 K equatorial daytime maximum reported by Diviner. The spread depends on surface albedo."
+      },
+      "nightMinK": {
+        "value": 95,
+        "unit": "K",
+        "provenance": "source-derived",
+        "sourceIds": ["williams-2017"],
+        "processing": "Equatorial pre-sunrise minimum (~95 K) reported by Diviner. Rocky areas can be more than 50 K warmer, which is not modeled."
+      },
+      "summary": "Hot days near 392 K (119 °C) and nights near 95 K (−178 °C)."
+    },
+    {
+      "id": "thermal-midlatitude",
+      "name": "Mid-latitude",
+      "latitudeBand": "~45°",
+      "dayMaxK": {
+        "value": 359,
+        "unit": "K",
+        "provenance": "derived-estimate",
+        "sourceIds": ["williams-2017"],
+        "processing": "Equatorial 392 K scaled by cos(45°)^0.25, a radiative-equilibrium approximation for weaker noon sunlight. This is not a Diviner measurement."
+      },
+      "nightMinK": {
+        "value": 90,
+        "unit": "K",
+        "provenance": "placeholder",
+        "sourceIds": ["diviner-data"],
+        "processing": "Placeholder until the Diviner global minimum-temperature maps are sampled. It is set slightly below the equatorial minimum."
+      },
+      "summary": "Milder days, but nights at least as cold as the equator."
+    }
+  ]
+}

@@ -17,7 +17,16 @@
     "relayOutageDays": 2,
     "constructionWorkDays": 60,
     "maxTransferFraction": 0.1,
-    "scheduleMarginFraction": 0.1
+    "scheduleMarginFraction": 0.1,
+    "baseHeatRejectionW": 100,
+    "radiatorReferenceTempK": 300,
+    "radiatorDeratingPerK": 0.0015,
+    "minRadiatorFactor": 0.5,
+    "electronicsSurvivalTempK": 233,
+    "thermalLossWPerK": 0.5,
+    "thermalMarginFraction": 0.1,
+    "landingSlopeMarginFraction": 0.1,
+    "hazardAvoidanceSlopeReduction": 0.4
   },
   "descriptions": {
     "massMarginFraction": "Keep 10% of launch capacity free for mass growth.",
@@ -33,6 +42,15 @@
     "relayOutageDays": "Onboard storage must buffer 2 days of data during relay outages.",
     "constructionWorkDays": "Antenna deployment takes 60 robot-days of work, shared across robotic units.",
     "maxTransferFraction": "Transfers longer than 10% of mission duration eat into operations time.",
-    "scheduleMarginFraction": "The timeline should leave 10% of mission duration as schedule margin."
+    "scheduleMarginFraction": "The timeline should leave 10% of mission duration as schedule margin.",
+    "baseHeatRejectionW": "Heat the spacecraft structure rejects without radiators (W) in a 300 K reference environment.",
+    "radiatorReferenceTempK": "Surface temperature (K) at which heat rejection is rated.",
+    "radiatorDeratingPerK": "Heat rejection falls 0.15% for each kelvin of daytime surface temperature above the reference.",
+    "minRadiatorFactor": "Heat rejection never falls below 50% of its rating.",
+    "electronicsSurvivalTempK": "Electronics must stay above 233 K (−40 °C) through the lunar night.",
+    "thermalLossWPerK": "An uninsulated lander loses 0.5 W of heat per kelvin between electronics and the night surface.",
+    "thermalMarginFraction": "Heat supply and rejection should exceed the need by 10%.",
+    "landingSlopeMarginFraction": "Site slope should stay 10% below the landing gear's slope tolerance.",
+    "hazardAvoidanceSlopeReduction": "Hazard detection steers to a flatter spot, cutting effective slope by 40%."
   }
 }

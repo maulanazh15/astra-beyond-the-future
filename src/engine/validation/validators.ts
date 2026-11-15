@@ -9,6 +9,13 @@ import {
   usableStorageWh,
 } from './derivedMetrics'
 import type { ValidationInput } from './derivedMetrics'
+import {
+  effectiveHeatRejectionW,
+  effectiveLandingSlopeDeg,
+  hazardLabels,
+  kelvinToCelsius,
+  nightThermalBalance,
+} from '../environment/thermal'
 import { gradeAgainstLimit, gradeAgainstNeed, round } from './grade'
 
 type Validator = (input: ValidationInput) => ValidationResult
@@ -218,6 +225,105 @@ export const validateMissionDuration: Validator = (input) => {
   }
 }
 
+export const validateLandingSite: Validator = (input) => {
+  const { mission, site, summary, assumptions } = input
+  const base = {
+    id: 'landingSite',
+    label: 'Landing site',
+    subsystem: 'landing',
+    assumptions: ['landingSlopeMarginFraction', 'hazardAvoidanceSlopeReduction'],
+  } as const
+  if (!site) {
+    return { ...base, status: 'critical', message: 'No landing site selected.', suggestion: 'Select a landing site.' }
+  }
+  if (mission.site.requiresRadioQuiet && !site.radioQuiet) {
+    return {
+      ...base,
+      status: 'critical',
+      message: `${site.name} faces Earth; terrestrial radio noise would drown out the observatory.`,
+      suggestion: 'Choose a far-side site shielded from Earth.',
+    }
+  }
+  const toleranceDeg = summary.maxLandingSlopeDeg
+  if (toleranceDeg === 0) {
+    return { ...base, status: 'critical', message: 'No landing gear installed.', suggestion: 'Add landing legs or pads.' }
+  }
+  const slopeDeg = round(effectiveLandingSlopeDeg(site, summary, assumptions), 1)
+  const hdaNote = summary.hazardAvoidance ? ' after hazard avoidance' : ''
+  const slopeStatus = gradeAgainstLimit(slopeDeg, toleranceDeg, assumptions.landingSlopeMarginFraction)
+  const hazard = site.hazardLevel.value
+  const hazardOnly = slopeStatus === 'valid' && hazard === 'high' && !summary.hazardAvoidance
+  const status = hazardOnly ? 'warning' : slopeStatus
+  return {
+    ...base,
+    ...byStatus(status, {
+      valid: [`Slope ${slopeDeg}°${hdaNote} is within the ${toleranceDeg}° gear tolerance. ${hazardLabels[hazard]} hazard.`, ''],
+      warning: [
+        hazardOnly
+          ? `High boulder hazard at ${site.name} with no hazard avoidance.`
+          : `Slope ${slopeDeg}°${hdaNote} is close to the ${toleranceDeg}° gear tolerance.`,
+        'Add hazard detection and avoidance or more tolerant landing gear.',
+      ],
+      critical: [
+        `Slope ${slopeDeg}°${hdaNote} exceeds the ${toleranceDeg}° gear tolerance.`,
+        'Add hazard detection and avoidance, use legged gear, or pick a smoother site.',
+      ],
+    }),
+  }
+}
+
+export const validateThermalEnvironment: Validator = (input) => {
+  const { thermal, summary, assumptions } = input
+  const base = {
+    id: 'thermalEnvironment',
+    label: 'Thermal environment',
+    subsystem: 'thermal',
+    assumptions: [
+      'electronicsSurvivalTempK',
+      'thermalLossWPerK',
+      'thermalMarginFraction',
+      'baseHeatRejectionW',
+      'radiatorReferenceTempK',
+      'radiatorDeratingPerK',
+      'minRadiatorFactor',
+    ],
+  } as const
+  if (!thermal) {
+    return { ...base, status: 'critical', message: 'No site thermal environment available.', suggestion: 'Select a landing site.' }
+  }
+  const margin = assumptions.thermalMarginFraction
+  // Graded on unrounded values so the simulation's night-survival rule agrees exactly.
+  const balance = nightThermalBalance(summary, thermal, assumptions, nightLoadW(input))
+  const nightStatus = gradeAgainstNeed(balance.supplyW, balance.needW, margin)
+  const needW = round(balance.needW)
+  const supplyW = round(balance.supplyW)
+  const payloadHeatW = summary.powerDemandByCategoryW.payload ?? 0
+  const rejectionW = round(effectiveHeatRejectionW(summary.heatRejectionW, thermal, assumptions))
+  const dayStatus = payloadHeatW === 0 ? 'valid' : gradeAgainstNeed(rejectionW, payloadHeatW, margin)
+
+  const nightC = kelvinToCelsius(thermal.nightMinK.value)
+  const dayC = kelvinToCelsius(thermal.dayMaxK.value)
+  const nightText = `Night ${thermal.nightMinK.value} K (${nightC} °C): heat ${supplyW} W vs ${needW} W needed.`
+  const dayText = `Day ${thermal.dayMaxK.value} K (${dayC} °C): rejection ${rejectionW} W vs ${payloadHeatW} W payload heat.`
+  const rank = { valid: 0, warning: 1, critical: 2 } as const
+  const worst = rank[nightStatus] >= rank[dayStatus] ? 'night' : 'day'
+  const status = worst === 'night' ? nightStatus : dayStatus
+  if (status === 'valid') {
+    return { ...base, status, message: `${nightText} ${dayText}`, suggestion: '' }
+  }
+  return {
+    ...base,
+    status,
+    message: worst === 'night' ? nightText : dayText,
+    suggestion:
+      worst === 'night'
+        ? nightStatus === 'critical'
+          ? 'Electronics would freeze on the first lunar night and the lander would be lost. Add insulation, radioisotope heater units, or electric heaters (with battery to match).'
+          : 'Add insulation, radioisotope heater units, or electric heaters (with battery to match).'
+        : 'Add radiator panels; hot sites derate heat rejection.',
+  }
+}
+
 export const validators: Validator[] = [
   validateMass,
   validateBudget,
@@ -229,6 +335,8 @@ export const validators: Validator[] = [
   validateCommunication,
   validateDataStorage,
   validateMissionDuration,
+  validateLandingSite,
+  validateThermalEnvironment,
 ]
 
 /** Runs every engineering check. Deterministic: same input, same output. */

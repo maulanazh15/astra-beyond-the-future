@@ -1,0 +1,136 @@
+{
+  "note": "Registry of 3D models. Every asset is 'planned' until its Blender GLB export is added under public/ and its status is set to 'available'. Planned assets render development placeholder geometry only.",
+  "assets": [
+    {
+      "id": "env-lunar-farside-terrain",
+      "name": "Far-Side Terrain Tile",
+      "category": "environment",
+      "status": "planned",
+      "modelPath": "assets/3d/environments/lunar-farside-terrain.glb",
+      "thumbnailPath": "assets/thumbnails/env-lunar-farside-terrain.png",
+      "scale": 1,
+      "rotationDeg": [
+        0,
+        0,
+        0
+      ],
+      "notes": "Ground tile around the landing site, origin at ground level."
+    },
+    {
+      "id": "lander-lunar-echo",
+      "name": "LUNAR ECHO Lander",
+      "category": "lander",
+      "status": "planned",
+      "modelPath": "assets/3d/landers/lunar-echo-lander.glb",
+      "thumbnailPath": "assets/thumbnails/lander-lunar-echo.png",
+      "scale": 1,
+      "rotationDeg": [
+        0,
+        0,
+        0
+      ],
+      "componentIds": [
+        "bus-small",
+        "bus-medium",
+        "bus-heavy"
+      ],
+      "notes": "Lander bus with legs. Origin at the bottom of the legs, centered, +X toward the payload ramp. A static GLB replaces the animated procedural lander (no descent or leg animation)."
+    },
+    {
+      "id": "payload-dipole-array",
+      "name": "Low-Frequency Dipole Array",
+      "category": "payload",
+      "status": "planned",
+      "modelPath": "assets/3d/payloads/dipole-antenna-array.glb",
+      "thumbnailPath": "assets/thumbnails/payload-dipole-array.png",
+      "scale": 1,
+      "rotationDeg": [
+        0,
+        0,
+        0
+      ],
+      "componentIds": [
+        "pay-dipole"
+      ]
+    },
+    {
+      "id": "payload-mesh-antenna",
+      "name": "Deployable Mesh Antenna",
+      "category": "payload",
+      "status": "planned",
+      "modelPath": "assets/3d/payloads/mesh-antenna.glb",
+      "thumbnailPath": "assets/thumbnails/payload-mesh-antenna.png",
+      "scale": 1,
+      "rotationDeg": [
+        0,
+        0,
+        0
+      ],
+      "componentIds": [
+        "pay-mesh"
+      ]
+    },
+    {
+      "id": "rover-deployment",
+      "name": "Antenna Deployment Rover",
+      "category": "rover",
+      "status": "planned",
+      "modelPath": "assets/3d/rovers/deployment-rover.glb",
+      "thumbnailPath": "assets/thumbnails/rover-deployment.png",
+      "scale": 1,
+      "rotationDeg": [
+        0,
+        0,
+        0
+      ],
+      "componentIds": [
+        "rob-rover"
+      ]
+    },
+    {
+      "id": "spacecraft-relay-orbiter",
+      "name": "Relay Orbiter",
+      "category": "spacecraft",
+      "status": "planned",
+      "modelPath": "assets/3d/spacecraft/relay-orbiter.glb",
+      "thumbnailPath": "assets/thumbnails/spacecraft-relay-orbiter.png",
+      "scale": 1,
+      "rotationDeg": [
+        0,
+        0,
+        0
+      ],
+      "notes": "Far-side relay satellite referenced by communication events."
+    },
+    {
+      "id": "structure-lcrt-telescope",
+      "name": "Crater Radio Telescope",
+      "category": "structure",
+      "status": "planned",
+      "modelPath": "assets/3d/structures/lcrt-telescope.glb",
+      "thumbnailPath": "assets/thumbnails/structure-lcrt-telescope.png",
+      "scale": 1,
+      "rotationDeg": [
+        0,
+        0,
+        0
+      ],
+      "notes": "Fully deployed telescope, exported in the mission scene's world coordinates. The procedural model animates assembly; a static GLB shows the operational configuration only."
+    },
+    {
+      "id": "structure-array-hub",
+      "name": "Observatory Central Hub",
+      "category": "structure",
+      "status": "planned",
+      "modelPath": "assets/3d/structures/array-hub.glb",
+      "thumbnailPath": "assets/thumbnails/structure-array-hub.png",
+      "scale": 1,
+      "rotationDeg": [
+        0,
+        0,
+        0
+      ],
+      "notes": "Surface hub the deployed antennas connect to."
+    }
+  ]
+}

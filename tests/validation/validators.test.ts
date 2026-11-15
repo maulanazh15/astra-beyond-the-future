@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { componentCatalog, gameplayAssumptions, getMission, launchVehicles, orbitProfiles } from '../../src/data'
+import { componentCatalog, gameplayAssumptions, getMission, getSite, getThermalProfile, launchVehicles, orbitProfiles } from '../../src/data'
 import { summarizeDesign } from '../../src/engine/resources/summarizeDesign'
 import type { ValidationInput } from '../../src/engine/validation/derivedMetrics'
 import {
@@ -8,14 +8,17 @@ import {
   validateDataStorage,
   validateDesign,
   validateEnergyStorage,
+  validateLandingSite,
   validateLaunchVehicle,
   validateMass,
   validateMissionDuration,
   validateOrbit,
   validatePowerBalance,
   validatePropellant,
+  validateThermalEnvironment,
 } from '../../src/engine/validation/validators'
 import type { DesignSummary } from '../../src/types/component'
+import type { LunarSite, ThermalProfile } from '../../src/types/environment'
 import type { LaunchVehicle, Mission, OrbitProfile } from '../../src/types/mission'
 import type { GameplayAssumptions } from '../../src/types/validation'
 
@@ -34,9 +37,40 @@ const assumptions: GameplayAssumptions = {
   constructionWorkDays: 60,
   maxTransferFraction: 0.1,
   scheduleMarginFraction: 0.1,
+  baseHeatRejectionW: 100,
+  radiatorReferenceTempK: 300,
+  radiatorDeratingPerK: 0.0015,
+  minRadiatorFactor: 0.5,
+  electronicsSurvivalTempK: 233,
+  thermalLossWPerK: 0.5,
+  thermalMarginFraction: 0.1,
+  landingSlopeMarginFraction: 0.1,
+  hazardAvoidanceSlopeReduction: 0.4,
 }
 
-const mission = { id: 'm1', destination: 'Moon', budgetMUsd: 100, durationDays: 300, requiredOperationDays: 180 } as Mission
+const value = <T,>(v: T) => ({ value: v, unit: '', provenance: 'placeholder' as const, sourceIds: [], processing: '' })
+const site: LunarSite = {
+  id: 's1',
+  name: 'Test Crater',
+  region: '',
+  description: '',
+  radioQuiet: true,
+  thermalProfileId: 't1',
+  craterDiameterKm: null,
+  landingSlopeDeg: value(9),
+  hazardLevel: value('moderate' as const),
+}
+// Night 133 K → 100 K below 233 K survival: 50 W uninsulated. Day 400 K → radiator factor 0.85.
+const thermal: ThermalProfile = { id: 't1', name: 'T', latitudeBand: '', dayMaxK: value(400), nightMinK: value(133), summary: '' }
+
+const mission = {
+  id: 'm1',
+  destination: 'Moon',
+  budgetMUsd: 100,
+  durationDays: 300,
+  requiredOperationDays: 180,
+  site: { requiresRadioQuiet: true, defaultSiteId: 's1' },
+} as Mission
 const vehicle: LaunchVehicle = { id: 'lv', name: 'LV', payloadCapacityKg: 1000, costMUsd: 0, reliability: 1, compatibleOrbitIds: ['o1'] }
 const orbit: OrbitProfile = { id: 'o1', name: 'Orbit', transferDays: 20, propellantKgPerTonneDry: 0, compatibleMissionIds: ['m1'], description: '' }
 
@@ -55,6 +89,11 @@ function summary(overrides: Partial<DesignSummary> = {}): DesignSummary {
     dataGenerationGbPerDay: 0,
     nightGenerationW: 0,
     powerDemandByCategoryW: {},
+    maxLandingSlopeDeg: 0,
+    hazardAvoidance: false,
+    heatLossReduction: 0,
+    survivalHeatW: 0,
+    heatRejectionW: 0,
     reliability: 1,
     unitsByCategory: {},
     ...overrides,
@@ -62,7 +101,7 @@ function summary(overrides: Partial<DesignSummary> = {}): DesignSummary {
 }
 
 function input(s: Partial<DesignSummary>, extra: Partial<ValidationInput> = {}): ValidationInput {
-  return { mission, summary: summary(s), launchVehicle: vehicle, orbit, assumptions, ...extra }
+  return { mission, summary: summary(s), launchVehicle: vehicle, orbit, assumptions, site, thermal, ...extra }
 }
 
 describe('validateMass', () => {
@@ -176,10 +215,74 @@ describe('validateMissionDuration', () => {
   })
 })
 
+describe('validateLandingSite', () => {
+  // Legs tolerate 10°, so valid up to 9° (10% margin).
+  const legs = { maxLandingSlopeDeg: 10 }
+
+  it('grades site slope against landing gear tolerance', () => {
+    expect(validateLandingSite(input(legs)).status).toBe('valid')
+    expect(validateLandingSite(input(legs, { site: { ...site, landingSlopeDeg: value(9.5) } })).status).toBe('warning')
+    expect(validateLandingSite(input(legs, { site: { ...site, landingSlopeDeg: value(14) } })).status).toBe('critical')
+  })
+
+  it('lets hazard avoidance pick a flatter spot', () => {
+    // 14° × (1 − 0.4) = 8.4°.
+    const steep = { site: { ...site, landingSlopeDeg: value(14) } }
+    expect(validateLandingSite(input({ ...legs, hazardAvoidance: true }, steep)).status).toBe('valid')
+  })
+
+  it('warns on high hazard without avoidance', () => {
+    const rough = { site: { ...site, hazardLevel: value('high' as const) } }
+    expect(validateLandingSite(input(legs, rough)).status).toBe('warning')
+    expect(validateLandingSite(input({ ...legs, hazardAvoidance: true }, rough)).status).toBe('valid')
+  })
+
+  it('rejects Earth-facing sites when the mission needs radio quiet', () => {
+    const result = validateLandingSite(input(legs, { site: { ...site, radioQuiet: false } }))
+    expect(result.status).toBe('critical')
+    expect(result.suggestion).toMatch(/far-side/)
+  })
+
+  it('is critical without a site or landing gear', () => {
+    expect(validateLandingSite(input(legs, { site: undefined })).status).toBe('critical')
+    expect(validateLandingSite(input({})).status).toBe('critical')
+  })
+})
+
+describe('validateThermalEnvironment', () => {
+  // Need 50 W × (1 − insulation). Night supply = survival load + radioisotope heat.
+  it('checks night survival heat against the site minimum temperature', () => {
+    const heated = (survivalHeatW: number, heatLossReduction = 0) => input({ survivalHeatW, heatLossReduction })
+    expect(validateThermalEnvironment(heated(56)).status).toBe('valid')
+    expect(validateThermalEnvironment(heated(52)).status).toBe('warning')
+    expect(validateThermalEnvironment(heated(40)).status).toBe('critical')
+    expect(validateThermalEnvironment(heated(20, 0.65)).status).toBe('valid') // need 17.5 W
+  })
+
+  it('counts electric survival loads as heat', () => {
+    // Bus 200 W × 0.5 survival = 100 W of heat.
+    expect(validateThermalEnvironment(input({ powerDemandByCategoryW: { bus: 200 } })).status).toBe('valid')
+  })
+
+  it('derates heat rejection at hot sites', () => {
+    // (100 + 0) × 0.85 = 85 W rejection.
+    const warmPayload = (payload: number) => input({ survivalHeatW: 60, powerDemandByCategoryW: { payload } })
+    expect(validateThermalEnvironment(warmPayload(70)).status).toBe('valid')
+    expect(validateThermalEnvironment(warmPayload(80)).status).toBe('warning')
+    const hot = validateThermalEnvironment(warmPayload(90))
+    expect(hot.status).toBe('critical')
+    expect(hot.suggestion).toMatch(/radiator/i)
+  })
+
+  it('is critical without a thermal profile', () => {
+    expect(validateThermalEnvironment(input({}, { thermal: undefined })).status).toBe('critical')
+  })
+})
+
 describe('validateDesign', () => {
-  it('returns all ten checks with the required fields', () => {
+  it('returns all twelve checks with the required fields', () => {
     const results = validateDesign(input({}))
-    expect(results).toHaveLength(10)
+    expect(results).toHaveLength(12)
     for (const r of results) {
       expect(['valid', 'warning', 'critical']).toContain(r.status)
       expect(r.message).not.toBe('')
@@ -205,6 +308,8 @@ describe('validateDesign', () => {
       launchVehicle: launchVehicles.find((lv) => lv.id === 'lv-heavy'),
       orbit: orbitProfiles.find((o) => o.id === 'orb-phasing'),
       assumptions: gameplayAssumptions,
+      site: getSite(lunarEcho.site.defaultSiteId),
+      thermal: getThermalProfile(getSite(lunarEcho.site.defaultSiteId)),
     })
     const notValid = results.filter((r) => r.status !== 'valid').map((r) => `${r.id}: ${r.message}`)
     expect(notValid).toEqual([])

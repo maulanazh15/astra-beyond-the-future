@@ -1,4 +1,5 @@
 import type { DesignSummary } from '../../types/component'
+import type { LunarSite } from '../../types/environment'
 import type { LaunchVehicle, Mission, MissionRequirement } from '../../types/mission'
 
 export type RequirementStatus = {
@@ -12,8 +13,15 @@ export function checkRequirements(
   mission: Mission,
   summary: DesignSummary,
   launchVehicle: LaunchVehicle | undefined,
+  context: {
+    site?: LunarSite
+    /** Dry mass plus loaded propellant (kg); defaults to dry mass. */
+    launchMassKg?: number
+  } = {},
 ): RequirementStatus[] {
+  const { site } = context
   const totalCost = summary.costMUsd + (launchVehicle?.costMUsd ?? 0)
+  const massKg = Math.round(context.launchMassKg ?? summary.massKg)
 
   return mission.requirements.map((requirement): RequirementStatus => {
     switch (requirement.kind) {
@@ -26,9 +34,9 @@ export function checkRequirements(
       case 'withinLaunchCapacity':
         return {
           requirement,
-          met: launchVehicle !== undefined && summary.massKg <= launchVehicle.payloadCapacityKg,
+          met: launchVehicle !== undefined && massKg <= launchVehicle.payloadCapacityKg,
           detail: launchVehicle
-            ? `${summary.massKg} of ${launchVehicle.payloadCapacityKg} kg`
+            ? `${massKg} of ${launchVehicle.payloadCapacityKg} kg incl. propellant`
             : 'No launch vehicle selected',
         }
       case 'minNetPowerW':
@@ -54,6 +62,12 @@ export function checkRequirements(
               : `${requirement.categories.length - missing.length} of ${requirement.categories.length} installed`,
         }
       }
+      case 'radioQuietSite':
+        return {
+          requirement,
+          met: site?.radioQuiet === true,
+          detail: site ? (site.radioQuiet ? `${site.name} is radio-quiet` : `${site.name} faces Earth`) : 'No site selected',
+        }
     }
   })
 }

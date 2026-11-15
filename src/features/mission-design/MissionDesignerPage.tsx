@@ -1,4 +1,4 @@
-import { ArrowLeft, Rocket, Satellite } from 'lucide-react'
+import { ArrowLeft, Box, Rocket, Satellite } from 'lucide-react'
 import { paths } from '../../app/paths'
 import { ButtonLink } from '../../components/common/ButtonLink'
 import { PageHeader } from '../../components/common/PageHeader'
@@ -6,10 +6,13 @@ import { Panel } from '../../components/common/Panel'
 import { useMission } from '../../components/layout/useMission'
 import { launchVehicles, orbitProfiles } from '../../data'
 import { formatMUsd, formatNumber, formatPercent } from '../../utils/format'
+import { SpacecraftViewer3D } from '../visualization/LazyScenes'
 import { ComponentLibrary } from './ComponentLibrary'
+import { DesignCompatibilityNotice } from './DesignCompatibilityNotice'
 import { OptionCard } from './OptionCard'
 import { ResourceDashboard } from './ResourceDashboard'
 import { SelectedComponentList } from './SelectedComponentList'
+import { SitePanel } from './SitePanel'
 import { useSpacecraftDesign } from './useSpacecraftDesign'
 import { ValidationPanel } from './ValidationPanel'
 
@@ -22,7 +25,7 @@ export function MissionDesignerPage() {
       <PageHeader
         eyebrow={`Mission Designer · ${mission.name}`}
         title="Configure your spacecraft"
-        description="Add components from the library, choose a launch vehicle and transfer orbit, and watch your resources update live."
+        description="Add components from the library, pick a landing site, launch vehicle and transfer orbit, and watch your resources update live."
         actions={
           <>
             <ButtonLink to={paths.briefing(mission.id)} variant="secondary" icon={ArrowLeft}>
@@ -35,9 +38,16 @@ export function MissionDesignerPage() {
         }
       />
 
+      <DesignCompatibilityNotice design={design} />
+
       <div className="grid gap-6 lg:grid-cols-[1fr_22rem]">
         <div className="min-w-0 space-y-6">
+          <Panel title="Spacecraft Preview" icon={Box}>
+            <SpacecraftViewer3D entries={design.entries} />
+          </Panel>
           <ComponentLibrary design={design} />
+
+          <SitePanel design={design} />
 
           <div className="grid gap-6 xl:grid-cols-2">
             <Panel title="Launch Vehicle" icon={Rocket}>

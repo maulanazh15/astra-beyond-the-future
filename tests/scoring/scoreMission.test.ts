@@ -52,6 +52,12 @@ describe('scoreMission', () => {
     expect(score.rating).toBe('F')
   })
 
+  it('caps a completed mission that delivered no science like a failure', () => {
+    const { setup, state } = finish(REFERENCE)
+    const noScience = { ...state, dataTransmitted: 0, outcome: { ...state.outcome!, result: 'failure' as const } }
+    expect(scoreMission(noScience, setup).total).toBeLessThan(45)
+  })
+
   it('is deterministic', () => {
     const { setup, state } = finish(REFERENCE)
     expect(scoreMission(state, setup)).toEqual(scoreMission(state, setup))

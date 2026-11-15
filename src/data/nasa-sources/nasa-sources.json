@@ -1,0 +1,116 @@
+{
+  "note": "Reference metadata for NASA and NASA-funded sources used by ASTRA. ASTRA is not endorsed by NASA. Values taken from a source are labeled 'source-derived'. Values that are only informed by a source are labeled 'derived-estimate' or 'placeholder'. All data is stored locally, and no NASA API is called during play.",
+  "sources": [
+    {
+      "id": "lro-mission",
+      "organization": "NASA Science Mission Directorate",
+      "missionOrInstrument": "Lunar Reconnaissance Orbiter (LRO)",
+      "title": "Lunar Reconnaissance Orbiter mission overview",
+      "url": "https://science.nasa.gov/mission/lro/",
+      "sourceType": "program-page",
+      "accessedOn": "2026-11-14",
+      "verification": "link-only",
+      "extracted": "Mission context for the LOLA and Diviner instruments. No values are taken from this page.",
+      "gameVariables": []
+    },
+    {
+      "id": "lola-pds",
+      "organization": "NASA Planetary Data System, Geosciences Node",
+      "missionOrInstrument": "LRO / Lunar Orbiter Laser Altimeter (LOLA)",
+      "title": "LOLA data archive (EDR, RDR, GDR, SHADR, SLDEM products)",
+      "url": "https://pds-geosciences.wustl.edu/missions/lro/lola.htm",
+      "sourceType": "dataset",
+      "accessedOn": "2026-11-14",
+      "verification": "link-only",
+      "extracted": "Planned source of site elevation and slope. Gridded slope values have not been sampled yet, so every site slope is a placeholder.",
+      "gameVariables": ["landingSlopeDeg"]
+    },
+    {
+      "id": "rosenburg-2011",
+      "organization": "NASA Goddard Space Flight Center / LOLA Science Team",
+      "missionOrInstrument": "LRO / LOLA",
+      "title": "Global surface slopes and roughness of the Moon from the Lunar Orbiter Laser Altimeter",
+      "citation": "Rosenburg, M. A., et al. (2011). J. Geophys. Res., 116, E02001. doi:10.1029/2010JE003716",
+      "url": "https://doi.org/10.1029/2010JE003716",
+      "sourceType": "publication",
+      "accessedOn": "2026-11-14",
+      "verification": "verified",
+      "extracted": "Qualitative finding only: the lunar highlands are much rougher than the mare plains. This sets the ordering of the placeholder slopes (mare smoother than highland craters). No numeric slope is taken from the paper.",
+      "gameVariables": ["landingSlopeDeg", "hazardLevel"]
+    },
+    {
+      "id": "diviner-data",
+      "organization": "UCLA / NASA LRO Diviner Team",
+      "missionOrInstrument": "LRO / Diviner Lunar Radiometer Experiment",
+      "title": "Diviner data products (RDR, global and polar temperature maps)",
+      "url": "https://www.diviner.ucla.edu/data",
+      "sourceType": "dataset",
+      "accessedOn": "2026-11-14",
+      "verification": "link-only",
+      "extracted": "Planned source for site-specific temperatures. The global maps have not been sampled yet. Profiles currently use the published zonal values below.",
+      "gameVariables": ["dayMaxK", "nightMinK"]
+    },
+    {
+      "id": "williams-2017",
+      "organization": "UCLA / NASA LRO Diviner Team",
+      "missionOrInstrument": "LRO / Diviner Lunar Radiometer Experiment",
+      "title": "The global surface temperatures of the Moon as measured by the Diviner Lunar Radiometer Experiment",
+      "citation": "Williams, J.-P., Paige, D. A., Greenhagen, B. T., Sefton-Nash, E. (2017). Icarus, 283, 300–325. doi:10.1016/j.icarus.2016.08.012",
+      "url": "https://doi.org/10.1016/j.icarus.2016.08.012",
+      "sourceType": "publication",
+      "accessedOn": "2026-11-14",
+      "verification": "verified",
+      "extracted": "Equatorial daytime maximum of about 387–397 K (depending on albedo) and a pre-sunrise minimum of about 95 K, from the abstract.",
+      "gameVariables": ["dayMaxK", "nightMinK"]
+    },
+    {
+      "id": "lcrt-phase2",
+      "organization": "NASA Innovative Advanced Concepts (NIAC) / JPL",
+      "missionOrInstrument": "Lunar Crater Radio Telescope (LCRT) concept",
+      "title": "Lunar Crater Radio Telescope (LCRT) on the Far Side of the Moon — NIAC Phase II Final Report",
+      "citation": "Bandyopadhyay, S., Goel, A., Pisanti, D., Lazio, J., Goldsmith, P., et al. (2025). NASA NTRS 20250001334",
+      "url": "https://ntrs.nasa.gov/citations/20250001334",
+      "sourceType": "publication",
+      "accessedOn": "2026-11-14",
+      "verification": "verified",
+      "extracted": "Reference concept: a 350 m wire-mesh reflector in a 1.3 km far-side crater, observing at 6–64 m wavelengths (about 4.7–47 MHz). It is a concept study, not a NASA mission.",
+      "gameVariables": ["craterDiameterKm", "observingBandMHz", "requiresRadioQuietSite"]
+    },
+    {
+      "id": "lcrt-nasa-page",
+      "organization": "NASA Innovative Advanced Concepts (NIAC)",
+      "missionOrInstrument": "Lunar Crater Radio Telescope (LCRT) concept",
+      "title": "Lunar Crater Radio Telescope (LCRT) on the Far Side of the Moon",
+      "url": "https://www.nasa.gov/general/lunar-crater-radio-telescope-lcrt-on-the-far-side-of-the-moon/",
+      "sourceType": "program-page",
+      "accessedOn": "2026-11-14",
+      "verification": "link-only",
+      "extracted": "Background on why the far side shields a radio telescope from Earth noise. This earlier description uses a 1 km reflector in a 3–5 km crater. ASTRA uses the newer Phase II values.",
+      "gameVariables": ["requiresRadioQuietSite"]
+    },
+    {
+      "id": "scan-program",
+      "organization": "NASA Space Operations Mission Directorate",
+      "missionOrInstrument": "Space Communications and Navigation (SCaN) program",
+      "title": "Space Communications and Navigation (SCaN) program",
+      "url": "https://www.nasa.gov/directorates/space-operations/space-communications-and-navigation-scan-program/",
+      "sourceType": "program-page",
+      "accessedOn": "2026-11-14",
+      "verification": "link-only",
+      "extracted": "Architecture reference: spacecraft reach Earth through relay and ground networks. A far-side lander has no direct view of Earth, so ASTRA requires a relay link. Link rates and contact hours remain gameplay assumptions.",
+      "gameVariables": ["relayContactHoursPerDay"]
+    },
+    {
+      "id": "sst-soa-comms",
+      "organization": "NASA Small Spacecraft Systems Virtual Institute",
+      "missionOrInstrument": "Small Spacecraft Technology State-of-the-Art report",
+      "title": "State-of-the-Art of Small Spacecraft Technology — Communications chapter",
+      "url": "https://www.nasa.gov/smallsat-institute/sst-soa/communications",
+      "sourceType": "publication",
+      "accessedOn": "2026-11-14",
+      "verification": "link-only",
+      "extracted": "Technology categories only: RF bands (S, X, Ka) and free-space optical links. The ASTRA component tiers follow these categories, but their data rates are fictional gameplay values.",
+      "gameVariables": ["dataRateMbps"]
+    }
+  ]
+}

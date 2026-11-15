@@ -12,7 +12,7 @@ type ResourceDashboardProps = {
 }
 
 export function ResourceDashboard({ mission, design }: ResourceDashboardProps) {
-  const { summary, launchVehicle, requirementStatus } = design
+  const { summary, launchVehicle, requirementStatus, launchMassKg } = design
   const launchCost = launchVehicle?.costMUsd ?? 0
   const totalCost = summary.costMUsd + launchCost
   const capacityKg = launchVehicle?.payloadCapacityKg ?? 0
@@ -24,7 +24,7 @@ export function ResourceDashboard({ mission, design }: ResourceDashboardProps) {
     <Panel title="Live Resource Dashboard" icon={Gauge}>
       <div className="space-y-5">
         <div className="grid grid-cols-2 gap-3">
-          <Metric label="Total mass" value={`${formatNumber(summary.massKg)} kg`} />
+          <Metric label="Dry mass" value={`${formatNumber(summary.massKg)} kg`} />
           <Metric label="Total cost" value={formatMUsd(totalCost)} hint={`${formatMUsd(summary.costMUsd)} parts + ${formatMUsd(launchCost)} launch`} />
         </div>
 
@@ -35,10 +35,10 @@ export function ResourceDashboard({ mission, design }: ResourceDashboardProps) {
           valueLabel={`${formatMUsd(totalCost)} / ${formatMUsd(mission.budgetMUsd)}`}
         />
         <ProgressBar
-          label="Launch mass"
-          value={summary.massKg}
+          label="Launch mass (incl. propellant)"
+          value={launchMassKg}
           max={capacityKg}
-          valueLabel={`${formatNumber(summary.massKg)} / ${formatNumber(capacityKg)} kg`}
+          valueLabel={`${formatNumber(Math.round(launchMassKg))} / ${formatNumber(capacityKg)} kg`}
         />
         <ProgressBar
           label="Power demand vs generation"

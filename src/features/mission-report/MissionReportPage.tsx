@@ -8,6 +8,7 @@ import {
   Radar,
   RotateCcw,
   ScrollText,
+  Trash2,
   Stethoscope,
   Target,
 } from 'lucide-react'
@@ -34,7 +35,7 @@ const outcomeBadge: Record<MissionResult, { tone: BadgeTone; label: string }> = 
 
 export function MissionReportPage() {
   const mission = useMission()
-  const { run } = useMissionSession()
+  const { run, clearRun } = useMissionSession()
   const outcome = run?.state.outcome
 
   const header = (
@@ -44,6 +45,16 @@ export function MissionReportPage() {
       description="How your design performed across objectives, engineering, science, efficiency, and risk."
       actions={
         <>
+          {outcome && (
+            <button
+              type="button"
+              onClick={clearRun}
+              className="inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm text-slate-300 transition-colors hover:bg-space-800 hover:text-white"
+            >
+              <Trash2 className="size-4" aria-hidden />
+              Clear Report
+            </button>
+          )}
           <ButtonLink to={paths.home} variant="secondary" icon={Home}>
             Main Menu
           </ButtonLink>

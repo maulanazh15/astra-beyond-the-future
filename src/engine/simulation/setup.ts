@@ -1,10 +1,12 @@
 import type { ComponentCatalog, ComponentCategory, DesignEntry, SpacecraftComponent } from '../../types/component'
+import type { ThermalProfile } from '../../types/environment'
 import type { Mission } from '../../types/mission'
 import type { SimPhaseId, SimulationConfig } from '../../types/simulation'
 import type { GameplayAssumptions } from '../../types/validation'
 import { findComponent } from '../design/designEntries'
+import { effectiveHeatRejectionW, nightThermalBalance } from '../environment/thermal'
 import { summarizeDesign } from '../resources/summarizeDesign'
-import { constructionDays, dailyDownlinkGb, requiredPropellantKg } from '../validation/derivedMetrics'
+import { constructionDays, dailyDownlinkGb, launchMassKg, loadedPropellantKg, nightLoadW, requiredPropellantKg } from '../validation/derivedMetrics'
 import type { ValidationInput } from '../validation/derivedMetrics'
 
 export type SimulationInput = {
@@ -15,6 +17,8 @@ export type SimulationInput = {
   orbit: ValidationInput['orbit']
   assumptions: GameplayAssumptions
   config: SimulationConfig
+  /** Thermal profile of the landing site; derates daytime heat rejection. */
+  thermal?: ThermalProfile
 }
 
 /** Everything fixed at launch. Computed once so each step stays cheap and deterministic. */
@@ -28,6 +32,12 @@ export type SimulationSetup = {
   startingBudgetMUsd: number
   usableBatteryWh: number
   propellantLoadedKg: number
+  /** Dry mass plus loaded propellant (kg), as checked by mass validation. */
+  launchMassKg: number
+  /** Payload capacity of the launch vehicle (kg); 0 when none selected. */
+  launchCapacityKg: number
+  /** The launch vehicle exists and can fly the selected transfer. */
+  launchVehicleCompatible: boolean
   propellantRequiredKg: number
   /** Per-category power demand (W). */
   demandW: Partial<Record<ComponentCategory, number>>
@@ -39,6 +49,12 @@ export type SimulationSetup = {
   hasCommunication: boolean
   hasPayload: boolean
   heatRejectionW: number
+  /**
+   * Night survival heat balance, shared with thermal validation (W).
+   * Both are 0 when no site thermal profile is known, so the check is skipped.
+   */
+  nightHeatNeedW: number
+  nightHeatSupplyW: number
   /** Lowest reliability among installed units of a category (1 when none installed). */
   minReliability: Partial<Record<ComponentCategory, number>>
   /** Lowest reliability among daytime-only solar generators (1 when none). */
@@ -54,7 +70,7 @@ function installed(entries: DesignEntry[], catalog: ComponentCatalog): Spacecraf
 }
 
 export function prepareSimulation(input: SimulationInput): SimulationSetup {
-  const { mission, entries, catalog, launchVehicle, orbit, assumptions, config } = input
+  const { mission, entries, catalog, launchVehicle, orbit, assumptions, config, thermal } = input
   const summary = summarizeDesign(entries, catalog)
   const derivedInput: ValidationInput = { mission, summary, launchVehicle, orbit, assumptions }
   const parts = installed(entries, catalog)
@@ -66,6 +82,7 @@ export function prepareSimulation(input: SimulationInput): SimulationSetup {
   const solarParts = parts.filter((p) => p.category === 'power' && !p.generatesDuringNight)
   const required = requiredPropellantKg(derivedInput)
   const buildDays = constructionDays(derivedInput)
+  const night = thermal ? nightThermalBalance(summary, thermal, assumptions, nightLoadW(derivedInput)) : { needW: 0, supplyW: 0 }
   const totalReliability = summary.unitCount ? summary.reliability * (launchVehicle?.reliability ?? 0) : 0
 
   return {
@@ -81,7 +98,10 @@ export function prepareSimulation(input: SimulationInput): SimulationSetup {
     constructionPercentPerDay: Number.isFinite(buildDays) ? 100 / buildDays : 0,
     startingBudgetMUsd: mission.budgetMUsd - summary.costMUsd - (launchVehicle?.costMUsd ?? 0),
     usableBatteryWh: summary.energyStorageWh * assumptions.batteryUsableFraction,
-    propellantLoadedKg: Math.min(summary.propellantCapacityKg, required * (1 + assumptions.propellantMarginFraction)),
+    propellantLoadedKg: loadedPropellantKg(derivedInput),
+    launchMassKg: launchMassKg(derivedInput),
+    launchCapacityKg: launchVehicle?.payloadCapacityKg ?? 0,
+    launchVehicleCompatible: launchVehicle !== undefined && (!orbit || launchVehicle.compatibleOrbitIds.includes(orbit.id)),
     propellantRequiredKg: required,
     demandW: summary.powerDemandByCategoryW,
     solarGenerationW: solarParts.reduce((sum, p) => sum + p.powerGenerationW, 0),
@@ -91,7 +111,9 @@ export function prepareSimulation(input: SimulationInput): SimulationSetup {
     dataStorageGb: summary.dataStorageGb,
     hasCommunication: summary.dataRateMbps > 0,
     hasPayload: (summary.unitsByCategory.payload ?? 0) > 0,
-    heatRejectionW: config.passiveHeatRejectionW + parts.reduce((sum, p) => sum + (p.heatRejectionW ?? 0), 0),
+    heatRejectionW: effectiveHeatRejectionW(summary.heatRejectionW, thermal, assumptions),
+    nightHeatNeedW: night.needW,
+    nightHeatSupplyW: night.supplyW,
     minReliability,
     solarReliability: solarParts.reduce((min, p) => Math.min(min, p.reliability), 1),
     baseRiskPercent: (1 - totalReliability) * 100,

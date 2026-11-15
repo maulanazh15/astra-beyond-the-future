@@ -26,6 +26,15 @@ describe('designStorage', () => {
     expect(loadDesign('other')).toBeUndefined()
   })
 
+  it('keeps the selected site and still loads saves made before sites existed', () => {
+    saveDesign('lunar-echo', { entries: [], launchVehicleId: 'a', orbitId: 'b', siteId: 'site-x' })
+    expect(loadDesign('lunar-echo')?.siteId).toBe('site-x')
+    localStorage.setItem('astra.design.lunar-echo', JSON.stringify({ version: 1, entries: [], launchVehicleId: 'a', orbitId: 'b' }))
+    expect(loadDesign('lunar-echo')).toEqual({ version: 1, entries: [], launchVehicleId: 'a', orbitId: 'b' })
+    localStorage.setItem('astra.design.lunar-echo', JSON.stringify({ version: 1, entries: [], launchVehicleId: 'a', orbitId: 'b', siteId: 7 }))
+    expect(loadDesign('lunar-echo')).toBeUndefined()
+  })
+
   it('rejects corrupt or outdated data', () => {
     localStorage.setItem('astra.design.lunar-echo', '{not json')
     expect(loadDesign('lunar-echo')).toBeUndefined()

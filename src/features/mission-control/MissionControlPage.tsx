@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import {
   Activity,
   ArrowLeft,
@@ -7,6 +8,7 @@ import {
   FileBarChart,
   Flame,
   HardDriveDownload,
+  Mountain,
   Radio,
   Rocket,
   ScrollText,
@@ -25,16 +27,20 @@ import { StatusBadge } from '../../components/common/StatusBadge'
 import { useMission } from '../../components/layout/useMission'
 import { chartTheme } from '../../components/simulation/chartTheme'
 import { TimeSeriesChart } from '../../components/simulation/TimeSeriesChart'
-import { simulationDisclaimer } from '../../data'
+import { getSite, simulationDisclaimer } from '../../data'
 import { activeConditions, batteryCapacityWh, phaseLabels } from '../../engine/simulation'
 import type { Mission } from '../../types/mission'
 import { formatMUsd, formatNumber } from '../../utils/format'
+import { describeDesignIssue } from '../mission-design/designIssueText'
 import { useSpacecraftDesign } from '../mission-design/useSpacecraftDesign'
 import { useMissionSession } from '../mission-session/missionSessionContext'
 import type { MissionSession, SimulationRun } from '../mission-session/missionSessionContext'
 import { EventToasts } from './EventToasts'
 import { PhaseTimeline } from './PhaseTimeline'
 import { SimulationControls } from './SimulationControls'
+import { MissionSurface3D } from '../visualization/LazyScenes'
+import { visualStateFromSimulation } from '../visualization/animations/missionTimeline'
+import { sceneSiteFrom } from '../visualization/utilities/sceneSite'
 import { communicationBadge, instrumentBadge, severityLabel, severityTone } from './statusLabels'
 
 export function MissionControlPage() {
@@ -69,6 +75,7 @@ function PreLaunch({ mission, session }: { mission: Mission; session: MissionSes
   const design = useSpacecraftDesign(mission)
   const critical = design.validation.filter((v) => v.status === 'critical')
   const warnings = design.validation.filter((v) => v.status === 'warning').length
+  const blocked = design.issues.length > 0
 
   if (session.entries.length === 0) {
     return (
@@ -102,12 +109,29 @@ function PreLaunch({ mission, session }: { mission: Mission; session: MissionSes
         <button
           type="button"
           onClick={session.launch}
-          className="inline-flex items-center gap-2 rounded-lg bg-cyan-500 px-6 py-3 font-semibold text-space-950 shadow-md shadow-cyan-500/20 transition-colors hover:bg-cyan-400"
+          disabled={blocked}
+          className="inline-flex items-center gap-2 rounded-lg bg-cyan-500 px-6 py-3 font-semibold text-space-950 shadow-md shadow-cyan-500/20 transition-colors hover:bg-cyan-400 disabled:cursor-not-allowed disabled:opacity-40"
         >
           <Rocket className="size-5" aria-hidden />
           Launch Mission
         </button>
       </div>
+      {blocked && (
+        <div className="mt-5 rounded-lg border border-amber-500/40 bg-amber-500/5 p-4 text-sm">
+          <p className="flex items-center gap-2 text-amber-200">
+            <ShieldAlert className="size-4" aria-hidden />
+            This saved design no longer fits the current component limits. Repair it in the Mission Designer to launch.
+          </p>
+          <ul className="mt-2 list-disc space-y-0.5 pl-6 text-xs text-slate-400">
+            {design.issues.map((issue) => (
+              <li key={issue.kind === 'unknownComponent' ? issue.componentId : issue.category}>{describeDesignIssue(issue)}</li>
+            ))}
+          </ul>
+          <ButtonLink to={paths.designer(mission.id)} variant="secondary" icon={Wrench} className="mt-3">
+            Repair in Designer
+          </ButtonLink>
+        </div>
+      )}
       {critical.length > 0 && (
         <div className="mt-5 rounded-lg border border-rose-500/30 bg-rose-500/5 p-4 text-sm">
           <p className="flex items-center gap-2 text-rose-200">
@@ -133,6 +157,19 @@ function LiveMission({ mission, run, session }: { mission: Mission; run: Simulat
   const comm = communicationBadge[state.communicationStatus]
   const instrument = instrumentBadge[state.instrumentStatus]
   const outcome = state.outcome
+  const site = getSite(run.design.siteId)
+  const sceneSite = useMemo(() => (site ? sceneSiteFrom(site) : undefined), [site])
+  // The 3D surface view reads the simulation state; it never feeds anything back.
+  const visual = useMemo(
+    () =>
+      visualStateFromSimulation(state, {
+        landingStartDay: setup.phaseDays.launch + setup.phaseDays.transit + setup.phaseDays.orbitalArrival,
+        landingDays: setup.phaseDays.landing,
+        hasRover: run.design.entries.some((e) => e.componentId === 'rob-rover'),
+        hasRobotics: setup.constructionPercentPerDay > 0,
+      }),
+    [state, setup, run.design.entries],
+  )
 
   return (
     <>
@@ -161,6 +198,12 @@ function LiveMission({ mission, run, session }: { mission: Mission; run: Simulat
       )}
 
       <PhaseTimeline state={state} history={history} />
+
+      {sceneSite && (
+        <Panel title="Surface Operations" icon={Mountain} className="mb-6">
+          <MissionSurface3D site={sceneSite} visual={visual} />
+        </Panel>
+      )}
 
       <div className="mb-6 grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-6">
         <StatTile

@@ -37,7 +37,10 @@ export type SimEventLogEntry = {
 }
 
 export type FailureReason =
+  | 'launchOverCapacity'
+  | 'launchVehicleIncompatible'
   | 'propellantDepleted'
+  | 'electronicsFrozen'
   | 'powerDepleted'
   | 'budgetExhausted'
   | 'noConstructionCapability'
@@ -121,7 +124,6 @@ export type SimulationConfig = {
   commReliabilityThreshold: number
   batteryLowChargeFraction: number
   batteryDegradationFraction: number
-  passiveHeatRejectionW: number
   overheatingHealthLoss: number
   robotReliabilityThreshold: number
   roboticDelayDay: number

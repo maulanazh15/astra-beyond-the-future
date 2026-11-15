@@ -1,0 +1,115 @@
+{
+  "note": "Representative landing-site archetypes, not specific named craters. Slopes and hazard levels are placeholders until LOLA gridded slope maps are sampled. Only their relative ordering is informed by published LOLA roughness results. Units are given per value.",
+  "sites": [
+    {
+      "id": "site-farside-equatorial",
+      "name": "Far-Side Equatorial Crater",
+      "region": "Far-side highlands, near the equator",
+      "description": "An LCRT-sized crater in the far-side highlands. Shielded from Earth radio noise, with moderate slopes.",
+      "radioQuiet": true,
+      "thermalProfileId": "thermal-equatorial",
+      "craterDiameterKm": {
+        "value": 1.3,
+        "unit": "km",
+        "provenance": "source-derived",
+        "sourceIds": ["lcrt-phase2"],
+        "processing": "Crater diameter of the LCRT Phase II reference concept. The site itself is representative."
+      },
+      "landingSlopeDeg": {
+        "value": 8,
+        "unit": "°",
+        "provenance": "placeholder",
+        "sourceIds": ["lola-pds", "rosenburg-2011"],
+        "processing": "Placeholder. Highlands are rougher than maria, so a moderate slope is used until LOLA GDR slopes are sampled."
+      },
+      "hazardLevel": {
+        "value": "moderate",
+        "unit": "rating",
+        "provenance": "placeholder",
+        "sourceIds": ["rosenburg-2011"],
+        "processing": "Gameplay rating for boulders and small craters. It has not been derived from imagery."
+      }
+    },
+    {
+      "id": "site-farside-rugged",
+      "name": "Far-Side Rugged Crater",
+      "region": "Far-side highlands, near the equator",
+      "description": "A steeper, boulder-strewn crater. It is radio-quiet but needs better landing tolerance or hazard avoidance.",
+      "radioQuiet": true,
+      "thermalProfileId": "thermal-equatorial",
+      "craterDiameterKm": {
+        "value": 1.3,
+        "unit": "km",
+        "provenance": "source-derived",
+        "sourceIds": ["lcrt-phase2"],
+        "processing": "Crater diameter of the LCRT Phase II reference concept. The site itself is representative."
+      },
+      "landingSlopeDeg": {
+        "value": 14,
+        "unit": "°",
+        "provenance": "placeholder",
+        "sourceIds": ["lola-pds", "rosenburg-2011"],
+        "processing": "Placeholder representing the rough end of highland terrain. It has not been sampled from LOLA."
+      },
+      "hazardLevel": {
+        "value": "high",
+        "unit": "rating",
+        "provenance": "placeholder",
+        "sourceIds": ["rosenburg-2011"],
+        "processing": "Gameplay rating for boulders and small craters. It has not been derived from imagery."
+      }
+    },
+    {
+      "id": "site-farside-midlatitude",
+      "name": "Far-Side Mid-Latitude Crater",
+      "region": "Far-side highlands, ~45° latitude",
+      "description": "Gentler terrain and milder days, but long cold nights. Radio-quiet.",
+      "radioQuiet": true,
+      "thermalProfileId": "thermal-midlatitude",
+      "craterDiameterKm": {
+        "value": 1.3,
+        "unit": "km",
+        "provenance": "source-derived",
+        "sourceIds": ["lcrt-phase2"],
+        "processing": "Crater diameter of the LCRT Phase II reference concept. The site itself is representative."
+      },
+      "landingSlopeDeg": {
+        "value": 6,
+        "unit": "°",
+        "provenance": "placeholder",
+        "sourceIds": ["lola-pds"],
+        "processing": "Placeholder. It has not been sampled from LOLA."
+      },
+      "hazardLevel": {
+        "value": "low",
+        "unit": "rating",
+        "provenance": "placeholder",
+        "sourceIds": [],
+        "processing": "Gameplay rating. It has not been derived from imagery."
+      }
+    },
+    {
+      "id": "site-nearside-mare",
+      "name": "Near-Side Mare Plain (comparison)",
+      "region": "Near-side mare, near the equator",
+      "description": "Smooth and easy to land on, but it faces Earth, so Earth's radio noise reaches the antenna.",
+      "radioQuiet": false,
+      "thermalProfileId": "thermal-equatorial",
+      "craterDiameterKm": null,
+      "landingSlopeDeg": {
+        "value": 3,
+        "unit": "°",
+        "provenance": "placeholder",
+        "sourceIds": ["lola-pds", "rosenburg-2011"],
+        "processing": "Placeholder. Mare plains are smoother than highlands, so a low slope is used until LOLA GDR slopes are sampled."
+      },
+      "hazardLevel": {
+        "value": "low",
+        "unit": "rating",
+        "provenance": "placeholder",
+        "sourceIds": ["rosenburg-2011"],
+        "processing": "Gameplay rating. It has not been derived from imagery."
+      }
+    }
+  ]
+}

@@ -23,7 +23,7 @@
         },
         {
           "id": "obj-observe",
-          "label": "Observe in the 5–50 MHz band",
+          "label": "Observe in the ~4.7–47 MHz band (LCRT Phase II concept range)",
           "metric": "≥ 180 operational days"
         },
         {
@@ -70,6 +70,11 @@
             "thermal",
             "robotics"
           ]
+        },
+        {
+          "id": "req-site",
+          "kind": "radioQuietSite",
+          "label": "Landing site on the far side, shielded from Earth radio noise"
         }
       ],
       "constraints": [
@@ -82,13 +87,19 @@
         "Primary science objective achieved",
         "Mission stays within budget"
       ],
-      "sources": [
-        "NASA NIAC — Lunar Crater Radio Telescope (LCRT)",
-        "LRO LOLA terrain data",
-        "LRO Diviner thermal data"
-      ],
       "requiredOperationDays": 180,
-      "dataReturnTargetGb": 15000
+      "dataReturnTargetGb": 15000,
+      "sourceIds": [
+        "lcrt-phase2",
+        "lcrt-nasa-page",
+        "williams-2017",
+        "rosenburg-2011",
+        "scan-program"
+      ],
+      "site": {
+        "requiresRadioQuiet": true,
+        "defaultSiteId": "site-farside-equatorial"
+      }
     }
   ]
 }

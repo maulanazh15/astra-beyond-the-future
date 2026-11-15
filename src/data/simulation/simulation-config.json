@@ -21,7 +21,6 @@
     "commReliabilityThreshold": 0.95,
     "batteryLowChargeFraction": 0.3,
     "batteryDegradationFraction": 0.1,
-    "passiveHeatRejectionW": 100,
     "overheatingHealthLoss": 0.3,
     "robotReliabilityThreshold": 0.95,
     "roboticDelayDay": 3,
@@ -32,6 +31,7 @@
     "lunarDay": "Surface time alternates ~14.75 days of daylight and night. Robots and instruments work only in daylight; at night the lander enters survival mode.",
     "propellant": "Transfer propellant is spent 20% in transit, 35% at orbital arrival, 45% during landing.",
     "operationsCost": "Mission operations cost $0.1M per day from the remaining budget.",
+    "nightSurvival": "If night heat (survival electrical load plus radioisotope heaters) is below the heat needed to hold electronics at 233 K, the lander is lost on its first lunar night. This is the same rule the thermal validation check grades as critical. Temperatures are not simulated.",
     "events": "Events trigger from deterministic design conditions (component reliability, thermal capacity, battery charge), never from random rolls."
   }
 }

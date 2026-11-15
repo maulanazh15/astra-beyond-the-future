@@ -1,4 +1,5 @@
 import type { DesignSummary } from '../../types/component'
+import type { LunarSite, ThermalProfile } from '../../types/environment'
 import type { LaunchVehicle, Mission, OrbitProfile } from '../../types/mission'
 import type { GameplayAssumptions } from '../../types/validation'
 
@@ -8,18 +9,26 @@ export type ValidationInput = {
   launchVehicle: LaunchVehicle | undefined
   orbit: OrbitProfile | undefined
   assumptions: GameplayAssumptions
+  site?: LunarSite
+  /** Thermal profile of the selected site. */
+  thermal?: ThermalProfile
 }
 
 /** Propellant the selected transfer needs for the current dry mass (kg). */
-export function requiredPropellantKg({ summary, orbit }: ValidationInput): number {
+export function requiredPropellantKg({ summary, orbit }: Pick<ValidationInput, 'summary' | 'orbit'>): number {
   if (!orbit) return 0
   return (summary.massKg / 1000) * orbit.propellantKgPerTonneDry
 }
 
-/** Dry mass plus the propellant actually loaded (needed, capped by tank capacity) (kg). */
+/** Propellant loaded at launch: need plus margin, capped by tank capacity (kg). Shared with the simulation. */
+export function loadedPropellantKg(input: Pick<ValidationInput, 'summary' | 'orbit' | 'assumptions'>): number {
+  const needKg = requiredPropellantKg(input) * (1 + input.assumptions.propellantMarginFraction)
+  return Math.min(input.summary.propellantCapacityKg, needKg)
+}
+
+/** Dry mass plus the propellant actually loaded (kg). */
 export function launchMassKg(input: ValidationInput): number {
-  const loaded = Math.min(requiredPropellantKg(input), input.summary.propellantCapacityKg)
-  return input.summary.massKg + loaded
+  return input.summary.massKg + loadedPropellantKg(input)
 }
 
 /** Night survival load (W): partial bus load plus thermal and battery loads. */

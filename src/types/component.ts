@@ -41,8 +41,16 @@ export type SpacecraftComponent = {
   dataGenerationGbPerDay?: number
   /** True when generation continues through the lunar night. */
   generatesDuringNight?: boolean
-  /** Heat the unit can reject (W). Thermal components only. */
+  /** Heat the unit can reject (W) in the reference environment. Thermal components only. */
   heatRejectionW?: number
+  /** Steepest landing-zone slope the gear tolerates (degrees). Landing gear only. */
+  maxLandingSlopeDeg?: number
+  /** Steers the descent away from slopes and boulders. */
+  hazardAvoidance?: boolean
+  /** Fraction (0–1) of night heat loss that insulation prevents. */
+  heatLossReduction?: number
+  /** Heat produced without electrical power (W), e.g. radioisotope heaters. */
+  survivalHeatW?: number
 }
 
 export type DataDisclaimer = {
@@ -54,6 +62,14 @@ export type DataDisclaimer = {
 export type DesignEntry = {
   componentId: string
   quantity: number
+}
+
+/** Everything the player chooses in the designer for one mission. */
+export type DesignSelection = {
+  entries: DesignEntry[]
+  launchVehicleId: string
+  orbitId: string
+  siteId: string
 }
 
 export type DesignSummary = {
@@ -71,6 +87,14 @@ export type DesignSummary = {
   /** Generation from sources that keep working at night (W). */
   nightGenerationW: number
   powerDemandByCategoryW: Partial<Record<ComponentCategory, number>>
+  /** Best slope tolerance among installed landing gear (degrees); 0 without gear. */
+  maxLandingSlopeDeg: number
+  hazardAvoidance: boolean
+  /** Best insulation installed (0–1). */
+  heatLossReduction: number
+  survivalHeatW: number
+  /** Rated heat rejection of installed thermal parts (W), excluding the structure. */
+  heatRejectionW: number
   reliability: number
   unitsByCategory: Partial<Record<ComponentCategory, number>>
 }

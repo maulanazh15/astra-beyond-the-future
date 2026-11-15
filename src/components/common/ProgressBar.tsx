@@ -18,13 +18,14 @@ function barColor(ratio: number, mode: 'limit' | 'target') {
 }
 
 export function ProgressBar({ label, value, max = 100, valueLabel, mode = 'limit' }: ProgressBarProps) {
-  const ratio = max > 0 ? value / max : 0
+  // A zero max (e.g. no generation installed) with any demand counts as over the limit.
+  const ratio = max > 0 ? value / max : value > 0 ? Infinity : 0
   return (
     <div>
       <div className="mb-1.5 flex items-baseline justify-between gap-2 text-xs">
         <span className="text-slate-300">{label}</span>
         <span className="font-mono text-slate-400 tabular-nums">
-          {valueLabel ?? `${Math.round(ratio * 100)}%`}
+          {valueLabel ?? (Number.isFinite(ratio) ? `${Math.round(ratio * 100)}%` : '—')}
         </span>
       </div>
       <div
