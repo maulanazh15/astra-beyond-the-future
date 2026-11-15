@@ -49,14 +49,17 @@ export type RouteStep =
   | { kind: 'drive'; from: Vec3; to: Vec3; heading: number; waypoint: number; durationS: number; lengthM: number }
   | { kind: 'tool'; at: Vec3; heading: number; waypoint: number; durationS: number }
 
-/** The route unrolled into one lap of timed steps. */
-export function routeSteps(route: RoverRoute): RouteStep[] {
+/**
+ * The route unrolled into timed steps: one lap back to the start (`loop`), or once from the first
+ * waypoint to the last.
+ */
+export function routeSteps(route: RoverRoute, loop = true): RouteStep[] {
   const { waypoints, speedMps, toolS, turnRateRadPerS } = route
   const steps: RouteStep[] = []
   const n = waypoints.length
   if (n < 2) return steps
   let heading = headingTo(waypoints[0].position, waypoints[1].position)
-  for (let i = 0; i < n; i += 1) {
+  for (let i = 0; i < (loop ? n : n - 1); i += 1) {
     const from = waypoints[i].position
     const next = waypoints[(i + 1) % n]
     const target = headingTo(from, next.position)
@@ -111,6 +114,25 @@ export function roverCyclePose(route: RoverRoute, timeS: number, steps: RouteSte
   const last = steps[steps.length - 1]
   const at = last.kind === 'drive' ? last.to : last.at
   return { position: [at[0], 0, at[2]], headingRad: last.kind === 'turn' ? last.to : last.heading, odometerM, mode: 'drive', tool: 0, waypoint: 0 }
+}
+
+/** Total duration of a list of steps (s). */
+export function stepsDurationS(steps: readonly RouteStep[]): number {
+  return steps.reduce((sum, s) => sum + s.durationS, 0)
+}
+
+/**
+ * Rover pose `timeS` into a one-way route: clamped to the start and the end instead of looping, so
+ * the same time always gives the same pose (scrubbing, replays).
+ */
+export function routePoseAt(route: RoverRoute, timeS: number, steps: RouteStep[] = routeSteps(route, false)): RoverCyclePose {
+  const period = stepsDurationS(steps)
+  if (steps.length === 0 || period <= 0) return roverCyclePose(route, 0, steps)
+  if (timeS < period) return roverCyclePose(route, Math.max(0, timeS), steps)
+  const lengthM = steps.reduce((sum, s) => sum + (s.kind === 'drive' ? s.lengthM : 0), 0)
+  const last = steps[steps.length - 1]
+  const at = last.kind === 'drive' ? last.to : last.at
+  return { position: [at[0], 0, at[2]], headingRad: last.kind === 'turn' ? last.to : last.heading, odometerM: lengthM, mode: last.kind === 'tool' ? 'tool' : last.kind, tool: last.kind === 'tool' ? 1 : 0, waypoint: last.waypoint }
 }
 
 /** Point and slope along a 3D polyline at a fraction 0–1 of its length (for the egress ramp). */

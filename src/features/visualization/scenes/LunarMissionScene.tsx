@@ -1,6 +1,6 @@
 import { useFrame } from '@react-three/fiber'
 import type { ThreeEvent } from '@react-three/fiber'
-import { useLayoutEffect, useMemo, useRef } from 'react'
+import { useCallback, useLayoutEffect, useMemo, useRef } from 'react'
 import type { Mesh, MeshBasicMaterial } from 'three'
 import type { OrbitControls as ThreeOrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import type { MissionVisualState } from '../animations/missionTimeline'
@@ -17,8 +17,10 @@ import type { Vec3 } from '../types/scene'
 import type { MissionAssetId } from '../utilities/missionAssets'
 import { missionAssetInfo } from '../utilities/missionAssets'
 import type { MissionWorld } from '../utilities/missionWorld'
+import type { RoverMissionPose } from '../utilities/roverMission'
 import { LunarEnvironment } from './LunarEnvironment'
 import { RoverController } from './RoverController'
+import { RoverRouteGuide } from './RoverRouteGuide'
 
 export type LunarMissionSceneProps = {
   world: MissionWorld
@@ -64,6 +66,13 @@ export function LunarMissionScene({ world, visual, earthVisible, animate, hidden
   useLayoutEffect(() => () => disposeMaterials(materials), [materials])
   const controls = useRef<ThreeOrbitControls | null>(null)
   const roverPosition = useRef<Vec3>(world.layout.egressPath[0])
+  const onRoverMove = useCallback((p: Vec3) => {
+    roverPosition.current = p
+  }, [])
+  const roverPose = useRef<RoverMissionPose | null>(null)
+  const onRoverPose = useCallback((p: RoverMissionPose) => {
+    roverPose.current = p
+  }, [])
   const { layout, lcrt } = world
 
   const select = (id: MissionAssetId) => (e: ThreeEvent<MouseEvent>) => {
@@ -98,7 +107,7 @@ export function LunarMissionScene({ world, visual, earthVisible, animate, hidden
     <>
       <SceneCamera key={`cam-${resetKey}`} positionM={layout.overview.positionM} targetM={layout.overview.targetM} />
       <OrbitControls key={`orbit-${resetKey}`} controlsRef={controls} target={layout.overview.targetM} minDistanceM={3} maxDistanceM={150} minElevationDeg={4} />
-      <CameraFocus controls={controls} focus={focus} defaultMinDistanceM={3} />
+      <CameraFocus controls={controls} focus={focus} defaultMinDistanceM={3} groundHeightAt={world.terrain.heightAt} />
       {/* Night: the sun is down; a faint residual light keeps the hardware readable. */}
       <SceneLighting shadowExtentM={80} sunIntensity={visual.night ? 0.35 : 3.2} />
       <LunarEnvironment terrain={world.terrain} rocks={world.rocks} earthVisible={earthVisible} animate={animate} />
@@ -110,20 +119,30 @@ export function LunarMissionScene({ world, visual, earthVisible, animate, hidden
           </ReplaceableModel>
         </group>
       )}
-      {visual.telescopeVisible && (
-        <group name="telescope" visible={!hidden.has('telescope')} onClick={select('telescope')} {...hover}>
+      {/* Mounted with the lander (shown once delivered), so its eased progress matches the rover's. */}
+      {(visual.landerVisible || visual.telescopeVisible) && (
+        <group name="telescope" visible={visual.telescopeVisible && !hidden.has('telescope')} onClick={select('telescope')} {...hover}>
           <ReplaceableModel assetId={missionAssetInfo('telescope', lcrt).modelAssetId}>
-            <LCRTelescope layout={lcrt} materials={materials} deployment={visual.telescope} receiverActive={visual.receiverActive} animate={animate} />
+            <LCRTelescope layout={lcrt} materials={materials} deployment={visual.telescope} receiverActive={visual.receiverActive} animate={animate} anchorSchedule={layout.anchorSchedule} />
           </ReplaceableModel>
         </group>
       )}
       {visual.roverPresent && visual.landerVisible && (
         <group name="rover" visible={!hidden.has('rover')} onClick={select('rover')} {...hover}>
-          <RoverController layout={layout} terrain={world.terrain} visual={visual} materials={materials} animate={animate} onMove={(p) => {
-              roverPosition.current = p
-            }} />
+          <RoverController
+            layout={layout}
+            terrain={world.terrain}
+            landing={visual.landing}
+            egress={visual.roverEgress}
+            telescope={visual.telescope}
+            materials={materials}
+            animate={animate}
+            onMove={onRoverMove}
+            onPose={onRoverPose}
+          />
         </group>
       )}
+      {visual.roverPresent && visual.landerVisible && !hidden.has('rover') && <RoverRouteGuide layout={layout} terrain={world.terrain} pose={roverPose} />}
       {selected && !hidden.has(selected) && <SelectionMarker key={selected} at={markerAt[selected]} radiusM={markerRadius[selected]} />}
     </>
   )

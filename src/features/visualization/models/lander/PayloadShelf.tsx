@@ -3,6 +3,7 @@ import { useMemo, useRef } from 'react'
 import type { RefObject } from 'react'
 import type { Group } from 'three'
 import { egressPose } from '../../animations/missionTimeline'
+import { MergedStatic } from '../../components/MergedStatic'
 import type { SpacecraftMaterials } from '../../materials/spacecraftMaterials'
 import type { Vec3 } from '../../types/scene'
 import { LANDER, ROVER_STOW_X, rampAngleRad } from '../../utilities/landerLayout'
@@ -56,10 +57,12 @@ export function PayloadShelf({ egress, materials }: { egress: RefObject<number>;
   return (
     <group>
       {/* Shelf deck: graphite plate with aluminium edge rails and tie-down points. */}
-      <BeveledBox size={[SHELF_LENGTH, 0.06, halfWidthM * 2]} position={[innerX + SHELF_LENGTH / 2, topY - 0.03, 0]} material={materials.graphite} bevelM={0.012} />
-      {[-1, 1].map((side) => (
-        <BeveledBox key={side} size={[SHELF_LENGTH, 0.05, 0.04]} position={[innerX + SHELF_LENGTH / 2, topY + 0.005, side * (halfWidthM - 0.02)]} material={materials.aluminium} bevelM={0.01} />
-      ))}
+      <MergedStatic>
+        <BeveledBox size={[SHELF_LENGTH, 0.06, halfWidthM * 2]} position={[innerX + SHELF_LENGTH / 2, topY - 0.03, 0]} material={materials.graphite} bevelM={0.012} />
+        {[-1, 1].map((side) => (
+          <BeveledBox key={side} size={[SHELF_LENGTH, 0.05, 0.04]} position={[innerX + SHELF_LENGTH / 2, topY + 0.005, side * (halfWidthM - 0.02)]} material={materials.aluminium} bevelM={0.01} />
+        ))}
+      </MergedStatic>
       <StrutInstances struts={supports} material={materials.aluminium} />
       {CLAMPS.map((p, i) => (
         <group key={p.join()} position={p}>
@@ -83,16 +86,18 @@ export function PayloadShelf({ egress, materials }: { egress: RefObject<number>;
       <group position={[outerX, topY, 0]}>
         <Hinge lengthM={0.9} radiusM={0.03} metal={materials.aluminium} dark={materials.black} />
         <group ref={ramp} name="lander-ramp" rotation={[0, 0, Math.PI / 2]}>
-          {[-1, 1].map((side) => (
-            <BeveledBox key={side} size={[RAMP, 0.07, 0.05]} position={[RAMP / 2, 0.02, side * 0.48]} material={materials.aluminium} bevelM={0.012} />
-          ))}
-          <BeveledBox size={[RAMP - 0.04, 0.025, 0.9]} position={[RAMP / 2, 0, 0]} material={materials.graphite} bevelM={0.006} />
-          {/* Traction slats. */}
-          {Array.from({ length: 7 }, (_, i) => (
-            <BeveledBox key={i} size={[0.03, 0.02, 0.86]} position={[0.12 + i * ((RAMP - 0.24) / 6), 0.02, 0]} material={materials.aluminium} bevelM={0.005} />
-          ))}
-          {/* Foot plate that rests on the regolith. */}
-          <BeveledBox size={[0.12, 0.02, 0.98]} position={[RAMP - 0.02, -0.02, 0]} rotation={[0, 0, 0.6]} material={materials.aluminium} bevelM={0.005} />
+          <MergedStatic>
+            {[-1, 1].map((side) => (
+              <BeveledBox key={side} size={[RAMP, 0.07, 0.05]} position={[RAMP / 2, 0.02, side * 0.48]} material={materials.aluminium} bevelM={0.012} />
+            ))}
+            <BeveledBox size={[RAMP - 0.04, 0.025, 0.9]} position={[RAMP / 2, 0, 0]} material={materials.graphite} bevelM={0.006} />
+            {/* Traction slats. */}
+            {Array.from({ length: 7 }, (_, i) => (
+              <BeveledBox key={i} size={[0.03, 0.02, 0.86]} position={[0.12 + i * ((RAMP - 0.24) / 6), 0.02, 0]} material={materials.aluminium} bevelM={0.005} />
+            ))}
+            {/* Foot plate that rests on the regolith. */}
+            <BeveledBox size={[0.12, 0.02, 0.98]} position={[RAMP - 0.02, -0.02, 0]} rotation={[0, 0, 0.6]} material={materials.aluminium} bevelM={0.005} />
+          </MergedStatic>
         </group>
       </group>
     </group>

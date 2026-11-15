@@ -4,6 +4,7 @@ import type { RefObject } from 'react'
 import { AdditiveBlending, Color, MeshBasicMaterial } from 'three'
 import type { Group, Mesh } from 'three'
 import type { LanderPose } from '../../animations/missionTimeline'
+import { MergedStatic } from '../../components/MergedStatic'
 import { useDisposable } from '../../hooks/useDisposable'
 import type { SpacecraftMaterials } from '../../materials/spacecraftMaterials'
 import type { Vec3 } from '../../types/scene'
@@ -69,33 +70,35 @@ export function DescentEngine({ pose, materials }: { pose: RefObject<LanderPose>
 
   return (
     <group>
-      <StrutInstances struts={frame} material={materials.aluminium} />
-      {/* Gimbal ring, two gimbal actuators, injector dome, combustion chamber. */}
-      <mesh position={[0, 0.8, 0]} rotation={[Math.PI / 2, 0, 0]} material={materials.graphite} castShadow>
-        <torusGeometry args={[0.18, 0.022, 8, 28]} />
-      </mesh>
-      {[0, Math.PI / 2].map((a) => (
-        <mesh key={a} position={[Math.cos(a) * 0.3, 0.78, Math.sin(a) * 0.3]} rotation={[a === 0 ? 0 : 0.5, 0, a === 0 ? 0.5 : 0]} material={materials.aluminium} castShadow>
-          <cylinderGeometry args={[0.025, 0.025, 0.16, 10]} />
+      <MergedStatic>
+        <StrutInstances struts={frame} material={materials.aluminium} />
+        {/* Gimbal ring, two gimbal actuators, injector dome, combustion chamber. */}
+        <mesh position={[0, 0.8, 0]} rotation={[Math.PI / 2, 0, 0]} material={materials.graphite} castShadow>
+          <torusGeometry args={[0.18, 0.022, 8, 28]} />
         </mesh>
-      ))}
-      <mesh position={[0, 0.84, 0]} material={materials.aluminium} castShadow>
-        <sphereGeometry args={[0.13, 20, 10, 0, Math.PI * 2, 0, Math.PI / 2]} />
-      </mesh>
-      <mesh position={[0, 0.76, 0]} material={materials.nozzle} castShadow>
-        <cylinderGeometry args={[0.13, 0.1, 0.16, 20]} />
-      </mesh>
-      {/* Thermal blanket band around the chamber. */}
-      <mesh position={[0, 0.79, 0]} material={materials.ceramic}>
-        <cylinderGeometry args={[0.138, 0.138, 0.06, 20]} />
-      </mesh>
-      <mesh geometry={nozzle} position={[0, THROAT_Y, 0]} material={materials.nozzle} castShadow />
-      <mesh position={[0, EXIT_Y, 0]} rotation={[Math.PI / 2, 0, 0]} material={materials.graphite}>
-        <torusGeometry args={[EXIT_R, 0.014, 6, 32]} />
-      </mesh>
-      {feeds.map((points) => (
-        <CableRun key={points[0].join()} points={points} radiusM={0.016} material={materials.aluminium} />
-      ))}
+        {[0, Math.PI / 2].map((a) => (
+          <mesh key={a} position={[Math.cos(a) * 0.3, 0.78, Math.sin(a) * 0.3]} rotation={[a === 0 ? 0 : 0.5, 0, a === 0 ? 0.5 : 0]} material={materials.aluminium} castShadow>
+            <cylinderGeometry args={[0.025, 0.025, 0.16, 10]} />
+          </mesh>
+        ))}
+        <mesh position={[0, 0.84, 0]} material={materials.aluminium} castShadow>
+          <sphereGeometry args={[0.13, 20, 10, 0, Math.PI * 2, 0, Math.PI / 2]} />
+        </mesh>
+        <mesh position={[0, 0.76, 0]} material={materials.nozzle} castShadow>
+          <cylinderGeometry args={[0.13, 0.1, 0.16, 20]} />
+        </mesh>
+        {/* Thermal blanket band around the chamber. */}
+        <mesh position={[0, 0.79, 0]} material={materials.ceramic}>
+          <cylinderGeometry args={[0.138, 0.138, 0.06, 20]} />
+        </mesh>
+        <mesh geometry={nozzle} position={[0, THROAT_Y, 0]} material={materials.nozzle} castShadow />
+        <mesh position={[0, EXIT_Y, 0]} rotation={[Math.PI / 2, 0, 0]} material={materials.graphite}>
+          <torusGeometry args={[EXIT_R, 0.014, 6, 32]} />
+        </mesh>
+        {feeds.map((points) => (
+          <CableRun key={points[0].join()} points={points} radiusM={0.016} material={materials.aluminium} />
+        ))}
+      </MergedStatic>
 
       {/* Plume (no shadows, additive) and throat glow. */}
       <mesh ref={throat} position={[0, THROAT_Y - 0.02, 0]} rotation={[Math.PI / 2, 0, 0]} visible={false}>

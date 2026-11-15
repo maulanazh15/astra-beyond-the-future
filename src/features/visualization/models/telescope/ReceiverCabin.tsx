@@ -1,9 +1,10 @@
 import { useFrame } from '@react-three/fiber'
-import { useMemo, useRef } from 'react'
+import { memo, useMemo, useRef } from 'react'
 import type { Mesh } from 'three'
 import { Color, DoubleSide, MeshStandardMaterial } from 'three'
 import { ACCENT_CYAN } from '../../materials/spacecraftMaterials'
 import type { SpacecraftMaterials } from '../../materials/spacecraftMaterials'
+import { MergedStatic } from '../../components/MergedStatic'
 import { useDisposable } from '../../hooks/useDisposable'
 import { ringPoints } from '../../utilities/hardwareLayout'
 import { feedHorn, octagonPrism } from '../geometry'
@@ -14,7 +15,7 @@ import { BeveledBox, Fasteners } from '../spacecraft/parts'
  * octagonal cabin with radiator fins on top, three bridle lugs, a downward feed-horn cluster, and
  * crossed low-frequency dipole feeds. The feed ring glows while the receiver is observing.
  */
-export function ReceiverCabin({ materials, active, animate }: { materials: SpacecraftMaterials; active: boolean; animate: boolean }) {
+export const ReceiverCabin = memo(function ReceiverCabin({ materials, active, animate }: { materials: SpacecraftMaterials; active: boolean; animate: boolean }) {
   const cabin = useDisposable(() => octagonPrism(0.72, 1.0, 0.04), [])
   const horn = useDisposable(() => feedHorn(0.06, 0.17, 0.42), [])
   const glow = useDisposable(() => new MeshStandardMaterial({ color: new Color('#0b1528'), emissive: new Color(ACCENT_CYAN), emissiveIntensity: 0.2 }), [])
@@ -30,7 +31,7 @@ export function ReceiverCabin({ materials, active, animate }: { materials: Space
   })
 
   return (
-    <group>
+    <MergedStatic>
       <mesh geometry={cabin} position={[0, -0.5, 0]} material={materials.mli} castShadow />
       <BeveledBox size={[1.1, 0.06, 1.1]} position={[0, 0.53, 0]} material={materials.white} bevelM={0.02} />
       {[-0.36, -0.18, 0, 0.18, 0.36].map((x) => (
@@ -61,6 +62,6 @@ export function ReceiverCabin({ materials, active, animate }: { materials: Space
       <mesh position={[0, -1.0, 0]} material={materials.graphite}>
         <cylinderGeometry args={[0.03, 0.03, 0.34, 8]} />
       </mesh>
-    </group>
+    </MergedStatic>
   )
-}
+})

@@ -1,8 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { getSite, getSource, getThermalProfile, lunarSites, missions, nasaSources, thermalProfiles } from '../../src/data'
+import { getSite, getSource, getThermalProfile, lcrtReference, lunarSites, missions, nasaSources, thermalProfiles } from '../../src/data'
 import type { SourcedValue } from '../../src/types/nasaSource'
 
-const sitesValues = lunarSites.flatMap((s) => [s.landingSlopeDeg, s.hazardLevel, ...(s.craterDiameterKm ? [s.craterDiameterKm] : [])])
+const sitesValues = [
+  ...lunarSites.flatMap((s) => [s.landingSlopeDeg, s.hazardLevel, ...(s.craterDiameterKm ? [s.craterDiameterKm] : [])]),
+  lcrtReference.reflectorDiameterM,
+  lcrtReference.craterDiameterKm,
+]
 const thermalValues = thermalProfiles.flatMap((p) => [p.dayMaxK, p.nightMinK])
 const allValues: SourcedValue<unknown>[] = [...sitesValues, ...thermalValues]
 

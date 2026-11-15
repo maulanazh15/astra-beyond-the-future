@@ -64,6 +64,9 @@ export function landerPose(progress: number): LanderPose {
   }
 }
 
+/** Egress progress where the ramp is down and the rover starts to drive. */
+export const EGRESS_DRIVE_START = 0.36
+
 /** Rover egress from the lander's payload shelf, 0 → 1: clamps release, ramp lowers, rover drives off. */
 export function egressPose(progress: number) {
   const p = Math.min(1, Math.max(0, progress))
@@ -71,7 +74,7 @@ export function egressPose(progress: number) {
     clampsReleased: p > 0.04,
     ramp: easeInOut(ramp(p, 0.04, 0.32)),
     /** Fraction of the rover's egress path driven. */
-    drive: easeInOut(ramp(p, 0.36, 1)),
+    drive: easeInOut(ramp(p, EGRESS_DRIVE_START, 1)),
   }
 }
 
@@ -90,27 +93,48 @@ export type TelescopeDeployment = {
   receiver: number
 }
 
+/**
+ * Where each assembly step sits in construction progress (0–1). Anchors get the largest share: the
+ * rover drives the whole rim and drills every one, and the scene shows each anchor appear as it
+ * does. Steps overlap slightly, as parallel robotic work would.
+ */
+export const TELESCOPE_STEPS = {
+  anchors: [0, 0.4],
+  towers: [0.34, 0.52],
+  cables: [0.48, 0.64],
+  reflector: [0.6, 0.88],
+  receiver: [0.86, 0.98],
+} as const satisfies Record<keyof TelescopeDeployment, readonly [number, number]>
+
 /** Construction progress (0–1) split into overlapping assembly steps. */
 export function telescopeDeployment(progress: number): TelescopeDeployment {
   const p = Math.min(1, Math.max(0, progress))
+  const step = (k: keyof TelescopeDeployment) => ramp(p, TELESCOPE_STEPS[k][0], TELESCOPE_STEPS[k][1])
   return {
-    anchors: ramp(p, 0, 0.14),
-    towers: easeInOut(ramp(p, 0.08, 0.32)),
-    cables: ramp(p, 0.26, 0.5),
-    reflector: easeInOut(ramp(p, 0.44, 0.84)),
-    receiver: easeInOut(ramp(p, 0.8, 0.98)),
+    anchors: step('anchors'),
+    towers: easeInOut(step('towers')),
+    cables: step('cables'),
+    reflector: easeInOut(step('reflector')),
+    receiver: easeInOut(step('receiver')),
   }
 }
 
 export function telescopeStepLabel(progress: number): string {
   if (progress <= 0) return 'Stowed in its canister'
-  if (progress < 0.14) return 'Installing rim anchors'
-  if (progress < 0.32) return 'Raising rim towers'
-  if (progress < 0.5) return 'Running suspension cables'
-  if (progress < 0.84) return 'Unfurling the wire-mesh reflector'
+  if (progress < TELESCOPE_STEPS.anchors[1]) return 'Installing rim anchors'
+  if (progress < TELESCOPE_STEPS.towers[1]) return 'Raising rim towers'
+  if (progress < TELESCOPE_STEPS.cables[1]) return 'Running suspension cables'
+  if (progress < TELESCOPE_STEPS.reflector[1]) return 'Unfurling the wire-mesh reflector'
   if (progress < 1) return 'Hoisting the receiver to the focal point'
   return 'Operational configuration'
 }
+
+/**
+ * Easing rates (1/s) for the values the models follow. Every model that shows the same quantity
+ * uses the same rate, and the scene mounts them together, so the rover, the anchors it drills, and
+ * the ramp it drives down stay in step frame by frame.
+ */
+export const MISSION_EASE = { landing: 1.4, egress: 1.4, telescope: 1.1 } as const
 
 // ── Whole-scene visual state ─────────────────────────────────
 
@@ -140,8 +164,8 @@ export type MissionVisualState = {
   caption: string
 }
 
-/** Share of the concept playback spent on each step. */
-const CONCEPT = { landingEnd: 0.2, egressEnd: 0.3, buildEnd: 0.94 } as const
+/** Share of the concept playback spent on each phase; operations run from `buildEnd` to the end. */
+export const CONCEPT = { landingEnd: 0.16, egressEnd: 0.26, buildEnd: 0.94 } as const
 
 /** Briefing playback: the full mission architecture from descent to first light, t = 0…1. */
 export function conceptVisualState(t: number): MissionVisualState {
@@ -149,7 +173,7 @@ export function conceptVisualState(t: number): MissionVisualState {
   const landing = ramp(x, 0, CONCEPT.landingEnd)
   const roverEgress = ramp(x, CONCEPT.landingEnd, CONCEPT.egressEnd)
   const telescope = ramp(x, CONCEPT.egressEnd, CONCEPT.buildEnd)
-  const operational = x >= 1
+  const operational = telescope >= 1
   const stage: MissionStageId = operational ? 'operational' : telescope > 0 ? 'construction' : landing < 1 ? 'descent' : 'surface'
   return {
     stage,
@@ -157,21 +181,110 @@ export function conceptVisualState(t: number): MissionVisualState {
     landing,
     roverPresent: true,
     roverEgress,
-    roverActivity: roverEgress <= 0 ? 'stowed' : roverEgress < 1 ? 'egress' : operational || telescope >= 1 ? 'parked' : 'working',
+    roverActivity: roverEgress <= 0 ? 'stowed' : roverEgress < 1 ? 'egress' : operational ? 'parked' : 'working',
     telescopeVisible: landing >= 1,
     telescope,
     receiverActive: operational,
     night: false,
     failed: false,
     caption:
-      stage === 'descent' ? 'Powered descent and touchdown'
-      : stage === 'surface' ? 'Rover egress down the payload ramp'
-      : stage === 'construction' ? telescopeStepLabel(telescope)
+      stage === 'descent' ? (landing < TOUCHDOWN_AT ? 'Powered descent to the landing pad' : 'Touchdown: engine shutdown and safing')
+      : stage === 'surface' ?
+        egressPose(roverEgress).drive <= 0 ? 'Rover deployment: clamps release, ramp lowers'
+        : roverEgress < 1 ? 'Rover egress down the payload ramp'
+        : 'Rover heading for the first rim anchor'
+      : stage === 'construction' ? `${telescopeStepLabel(telescope)} · time-lapse`
       : 'Operational: listening to the radio-quiet sky',
   }
 }
 
-/** What the simulation context adds to its state for the visuals. */
+// ── Mission sequence ─────────────────────────────────────────
+
+/** The nine visible steps of the LUNAR ECHO surface sequence, in order. */
+export const MISSION_STEPS = [
+  { id: 'descent', label: 'Descent' },
+  { id: 'landing', label: 'Landing' },
+  { id: 'touchdown', label: 'Touchdown' },
+  { id: 'roverDeploy', label: 'Rover deployment' },
+  { id: 'egress', label: 'Rover egress' },
+  { id: 'anchors', label: 'Anchor installation' },
+  { id: 'reflector', label: 'Reflector deployment' },
+  { id: 'receiver', label: 'Receiver installation' },
+  { id: 'operations', label: 'Telescope operations' },
+] as const
+
+export type MissionStepId = (typeof MISSION_STEPS)[number]['id']
+
+/** Landing progress where the braking descent gives way to the slow terminal descent. */
+export const TERMINAL_DESCENT_AT = 0.45
+
+/**
+ * The step a visual state shows, or null before the lander reaches the Moon. A failed mission
+ * reports the step it stopped in; it never advances past it.
+ */
+export function missionStep(v: MissionVisualState): MissionStepId | null {
+  // Lost before the landing burn began: nothing of the surface sequence happened.
+  if (v.stage === 'inTransit' || (v.stage === 'lost' && v.landing <= 0)) return null
+  if (v.landing < TERMINAL_DESCENT_AT) return 'descent'
+  if (v.landing < TOUCHDOWN_AT) return 'landing'
+  // Still in the landing phase (e.g. it failed on the last landing day): the sequence stops at touchdown.
+  if (v.landing < 1 || v.stage === 'descent') return 'touchdown'
+  if (v.roverPresent && v.roverEgress < 1 && v.telescope <= 0) return egressPose(v.roverEgress).drive <= 0 ? 'roverDeploy' : 'egress'
+  if (v.telescope < TELESCOPE_STEPS.anchors[1]) return 'anchors'
+  if (v.telescope < TELESCOPE_STEPS.reflector[1]) return 'reflector'
+  if (v.telescope < 1) return 'receiver'
+  return 'operations'
+}
+
+/** Index of a step in MISSION_STEPS. */
+export function missionStepIndex(id: MissionStepId): number {
+  return MISSION_STEPS.findIndex((s) => s.id === id)
+}
+
+/** Where each step starts in the concept playback (t), for jumping to it (just inside the step). */
+export function conceptStepStart(id: MissionStepId): number {
+  return id === 'descent' ? 0 : Math.min(1, conceptStepBoundary(id) + 0.002)
+}
+
+function conceptStepBoundary(id: MissionStepId): number {
+  const { landingEnd, egressEnd, buildEnd } = CONCEPT
+  const build = (p: number) => egressEnd + (buildEnd - egressEnd) * p
+  switch (id) {
+    case 'descent':
+      return 0
+    case 'landing':
+      return landingEnd * TERMINAL_DESCENT_AT
+    case 'touchdown':
+      return landingEnd * TOUCHDOWN_AT
+    case 'roverDeploy':
+      return landingEnd
+    case 'egress':
+      return landingEnd + (egressEnd - landingEnd) * EGRESS_DRIVE_START
+    case 'anchors':
+      return egressEnd
+    case 'reflector':
+      return build(TELESCOPE_STEPS.anchors[1])
+    case 'receiver':
+      return build(TELESCOPE_STEPS.reflector[1])
+    case 'operations':
+      return buildEnd
+  }
+}
+
+/** The visual context of a run, from its setup and the design's component ids. */
+export function simulationVisualContext(
+  setup: { phaseDays: Record<'launch' | 'transit' | 'orbitalArrival' | 'landing', number>; constructionPercentPerDay: number },
+  componentIds: readonly string[],
+): SimulationVisualContext {
+  return {
+    landingStartDay: setup.phaseDays.launch + setup.phaseDays.transit + setup.phaseDays.orbitalArrival,
+    landingDays: setup.phaseDays.landing,
+    hasRover: componentIds.includes('rob-rover'),
+    hasRobotics: setup.constructionPercentPerDay > 0,
+  }
+}
+
+/** What the simulation adds to its state for the visuals (see `simulationVisualContext`). */
 export type SimulationVisualContext = {
   /** Mission day the landing phase starts (launch + transit + orbital arrival), from the setup. */
   landingStartDay: number

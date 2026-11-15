@@ -2,6 +2,7 @@ import { useLayoutEffect, useRef } from 'react'
 import { BoxGeometry, Matrix4, Quaternion, Vector3 } from 'three'
 import type { Group, InstancedMesh } from 'three'
 import { useDisposable } from '../../hooks/useDisposable'
+import { MergedStatic } from '../../components/MergedStatic'
 import type { SpacecraftMaterials } from '../../materials/spacecraftMaterials'
 import { ROVER } from '../../utilities/roverLayout'
 
@@ -41,22 +42,24 @@ export function RoverWheel({ materials, side, spin }: { materials: SpacecraftMat
         <cylinderGeometry args={[0.055, 0.055, 0.06, 16]} />
       </mesh>
       <group ref={spin}>
-        <mesh rotation={[Math.PI / 2, 0, 0]} material={materials.aluminium} castShadow receiveShadow>
-          <cylinderGeometry args={[R - 0.008, R - 0.008, W, 28, 1, true]} />
-        </mesh>
-        <Grousers materials={materials} />
-        {/* Spokes and hub on the outer face. */}
-        {Array.from({ length: 6 }, (_, i) => (
-          <mesh key={i} position={[0, 0, side * (W / 2 - 0.02)]} rotation={[0, 0, (i * Math.PI) / 3]} material={materials.aluminium}>
-            <boxGeometry args={[R * 1.85, 0.016, 0.01]} />
+        <MergedStatic>
+          <mesh rotation={[Math.PI / 2, 0, 0]} material={materials.aluminium} castShadow receiveShadow>
+            <cylinderGeometry args={[R - 0.008, R - 0.008, W, 28, 1, true]} />
           </mesh>
-        ))}
-        <mesh position={[0, 0, side * (W / 2 - 0.02)]} rotation={[Math.PI / 2, 0, 0]} material={materials.graphite}>
-          <cylinderGeometry args={[0.045, 0.045, 0.03, 16]} />
-        </mesh>
-        <mesh position={[0, 0, 0]} rotation={[Math.PI / 2, 0, 0]} material={materials.black}>
-          <cylinderGeometry args={[R * 0.55, R * 0.55, W * 0.6, 16]} />
-        </mesh>
+          <Grousers materials={materials} />
+          {/* Spokes and hub on the outer face. */}
+          {Array.from({ length: 6 }, (_, i) => (
+            <mesh key={i} position={[0, 0, side * (W / 2 - 0.02)]} rotation={[0, 0, (i * Math.PI) / 3]} material={materials.aluminium}>
+              <boxGeometry args={[R * 1.85, 0.016, 0.01]} />
+            </mesh>
+          ))}
+          <mesh position={[0, 0, side * (W / 2 - 0.02)]} rotation={[Math.PI / 2, 0, 0]} material={materials.graphite}>
+            <cylinderGeometry args={[0.045, 0.045, 0.03, 16]} />
+          </mesh>
+          <mesh position={[0, 0, 0]} rotation={[Math.PI / 2, 0, 0]} material={materials.black}>
+            <cylinderGeometry args={[R * 0.55, R * 0.55, W * 0.6, 16]} />
+          </mesh>
+        </MergedStatic>
       </group>
     </group>
   )

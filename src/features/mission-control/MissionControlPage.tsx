@@ -39,7 +39,7 @@ import { EventToasts } from './EventToasts'
 import { PhaseTimeline } from './PhaseTimeline'
 import { SimulationControls } from './SimulationControls'
 import { MissionSurface3D } from '../visualization/LazyScenes'
-import { visualStateFromSimulation } from '../visualization/animations/missionTimeline'
+import { simulationVisualContext, visualStateFromSimulation } from '../visualization/animations/missionTimeline'
 import { sceneSiteFrom } from '../visualization/utilities/sceneSite'
 import { communicationBadge, instrumentBadge, severityLabel, severityTone } from './statusLabels'
 
@@ -162,12 +162,13 @@ function LiveMission({ mission, run, session }: { mission: Mission; run: Simulat
   // The 3D surface view reads the simulation state; it never feeds anything back.
   const visual = useMemo(
     () =>
-      visualStateFromSimulation(state, {
-        landingStartDay: setup.phaseDays.launch + setup.phaseDays.transit + setup.phaseDays.orbitalArrival,
-        landingDays: setup.phaseDays.landing,
-        hasRover: run.design.entries.some((e) => e.componentId === 'rob-rover'),
-        hasRobotics: setup.constructionPercentPerDay > 0,
-      }),
+      visualStateFromSimulation(
+        state,
+        simulationVisualContext(
+          setup,
+          run.design.entries.map((e) => e.componentId),
+        ),
+      ),
     [state, setup, run.design.entries],
   )
 

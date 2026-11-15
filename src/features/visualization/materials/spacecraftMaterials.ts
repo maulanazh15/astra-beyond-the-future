@@ -79,6 +79,22 @@ export function createSpacecraftMaterials() {
       // Repeated around (u) and along (v) a lathe: 64 radial wires × 32 rings.
       alphaMap: withRepeat(toTexture(gridAlphaMap(256, 16, 0.12), { repeat: true }), 4, 2),
       alphaTest: 0.5,
+      // The wires cover ~23% of each cell: at range the mipmapped alpha falls below alphaTest and the
+      // whole reflector would vanish. Alpha-to-coverage (MSAA) fades it to its true density instead.
+      alphaToCoverage: true,
+      side: DoubleSide,
+    }),
+    /**
+     * What a fine wire mesh looks like from tens of meters: a faint metallic sheet. Drawn under the
+     * wires so the reflector keeps its shape in wide shots and in crater shadow.
+     */
+    wireSheen: new MeshStandardMaterial({
+      color: new Color('#d3dbe5'),
+      metalness: 0.35,
+      roughness: 0.55,
+      transparent: true,
+      opacity: 0.2,
+      depthWrite: false,
       side: DoubleSide,
     }),
     /** Status lights and accent strips. */

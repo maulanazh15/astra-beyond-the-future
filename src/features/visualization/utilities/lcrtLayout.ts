@@ -3,11 +3,14 @@ import type { Terrain, Vec3 } from '../types/scene'
 /**
  * Layout of a scaled-down Lunar Crater Radio Telescope (LCRT) concept: a wire-mesh
  * paraboloid suspended inside a crater by cables from towers on the rim, with the receiver
- * hanging at the dish's focal point. The real concept uses a km-scale crater; this is a
- * small, readable stand-in sized to the scene's main crater.
+ * hanging at the dish's focal point. The Phase II concept puts a 350 m reflector in a 1.3 km
+ * crater; this is a compressed, readable stand-in sized to the scene's main crater (the factors
+ * are computed in `sceneScale.ts` and shown on the telescope's info card).
  */
 export type LcrtLayout = {
   center: { x: number; z: number }
+  /** Radius of the host crater in the scene (m). */
+  craterRadiusM: number
   dishRadiusM: number
   /** Depth of the paraboloid from rim to vertex (m). */
   dishSagM: number
@@ -92,6 +95,7 @@ export function lcrtLayout(terrain: Terrain): LcrtLayout {
 
   return {
     center: { x: crater.x, z: crater.z },
+    craterRadiusM: crater.radiusM,
     dishRadiusM,
     dishSagM,
     dishVertexY,

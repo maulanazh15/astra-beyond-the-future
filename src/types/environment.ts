@@ -14,6 +14,12 @@ export type ThermalProfile = {
   summary: string
 }
 
+/** Dimensions of the LCRT reference concept, for stating the 3D scene's scale. */
+export type LcrtReference = {
+  reflectorDiameterM: SourcedValue
+  craterDiameterKm: SourcedValue
+}
+
 /** A selectable landing site. Sites are representative, not specific named craters. */
 export type LunarSite = {
   id: string

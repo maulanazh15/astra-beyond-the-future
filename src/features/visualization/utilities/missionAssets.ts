@@ -1,9 +1,11 @@
+import { lcrtReference } from '../../../data'
 import { egressPose, telescopeStepLabel } from '../animations/missionTimeline'
 import type { MissionVisualState } from '../animations/missionTimeline'
 import { LANDER, PRIMARY_STRUT_LENGTH_M } from './landerLayout'
 import type { LcrtLayout } from './lcrtLayout'
 import type { MissionAssetId } from './missionSceneLayout'
 import { ROVER } from './roverLayout'
+import { scaleRatio, telescopeScale } from './sceneScale'
 
 export type { MissionAssetId }
 
@@ -25,6 +27,7 @@ const m = (v: number) => `${v.toFixed(1)} m`
 
 /** Static description of each asset, with dimensions taken from the models' own layouts. */
 export function missionAssetInfo(id: MissionAssetId, lcrt: LcrtLayout): MissionAssetInfo {
+  const scale = telescopeScale(lcrt, lcrtReference)
   switch (id) {
     case 'lander':
       return {
@@ -49,13 +52,14 @@ export function missionAssetInfo(id: MissionAssetId, lcrt: LcrtLayout): MissionA
         description:
           'Wire-mesh reflector suspended in the crater by cables from rim anchors, with a receiver hung at the focal point from three rim towers. Built in place by robots.',
         specs: [
-          { label: 'Reflector', value: `${(lcrt.dishRadiusM * 2).toFixed(0)} m dia.` },
+          { label: 'Reflector (scene)', value: `${scale.reflectorSceneM.toFixed(0)} m dia.` },
+          { label: 'Concept', value: `${scale.reflectorConceptM.toFixed(0)} m dia.` },
+          { label: 'Scene scale', value: scaleRatio(scale.reflectorFactor) },
           { label: 'Focal length', value: m(lcrt.focalLengthM) },
           { label: 'Towers', value: `${lcrt.towerBases.length} × ${lcrt.towerHeightM.toFixed(0)} m` },
           { label: 'Rim anchors', value: String(lcrt.anchors.length) },
         ],
-        provenance:
-          'Hypothetical ASTRA hardware inspired by the NASA NIAC Lunar Crater Radio Telescope concept study, shown far smaller than the studied 350 m reflector. Not an operational NASA mission.',
+        provenance: `Hypothetical ASTRA hardware inspired by the NASA NIAC Lunar Crater Radio Telescope Phase II concept (a ${scale.reflectorConceptM.toFixed(0)} m reflector in a ${(scale.craterConceptM / 1000).toFixed(1)} km crater). Shown at a compressed gameplay scale: reflector ${scaleRatio(scale.reflectorFactor)}, crater ${scaleRatio(scale.craterFactor)}; the lander and rover are drawn at their own size. Not an operational NASA mission.`,
         modelAssetId: 'structure-lcrt-telescope',
       }
     case 'rover':

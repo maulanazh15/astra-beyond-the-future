@@ -1,7 +1,8 @@
 import { useFrame } from '@react-three/fiber'
-import { useMemo, useRef } from 'react'
+import { memo, useMemo, useRef } from 'react'
 import type { RefObject } from 'react'
 import type { Group } from 'three'
+import { MergedStatic } from '../../components/MergedStatic'
 import type { SpacecraftMaterials } from '../../materials/spacecraftMaterials'
 import type { Vec3 } from '../../types/scene'
 import { ROVER, STOWED_ARM, armPoseForTool } from '../../utilities/roverLayout'
@@ -56,7 +57,7 @@ function suspension(side: 1 | -1): Strut[] {
  * Carries a 4-joint arm with an anchor drill, a stereo pan/tilt mast camera with lidar, hazard
  * cameras, a rear cable spool, and an anchor magazine.
  */
-export function ConstructionRover({ materials, motion, activity = 'parked', animate = true }: ConstructionRoverProps) {
+export const ConstructionRover = memo(function ConstructionRover({ materials, motion, activity = 'parked', animate = true }: ConstructionRoverProps) {
   const links = useMemo(() => [...suspension(1), ...suspension(-1)], [])
   const wheels = useRef<(Group | null)[]>([])
   const spool = useRef<Group>(null)
@@ -85,34 +86,38 @@ export function ConstructionRover({ materials, motion, activity = 'parked', anim
   return (
     <group>
       {/* Chassis: graphite body, white thermal deck, side radiators, solar panel on the rear deck. */}
-      <BeveledBox size={body.size} position={body.center} material={materials.graphite} bevelM={0.03} />
-      <BeveledBox size={[bw + 0.02, 0.04, bd + 0.02]} position={[body.center[0], deckTopY - 0.02, 0]} material={materials.white} bevelM={0.012} />
-      {[1, -1].map((s) => (
-        <BeveledBox key={s} size={[bw * 0.7, bh * 0.7, 0.015]} position={[body.center[0] - 0.05, body.center[1], s * (bd / 2 + 0.008)]} material={materials.radiator} bevelM={0.005} />
-      ))}
-      <mesh position={[-0.12, deckTopY + 0.004, 0.02]} rotation={[-Math.PI / 2, 0, 0]} material={materials.solarHi}>
-        <planeGeometry args={[0.42, 0.58]} />
-      </mesh>
-      <Fasteners points={[[0.48, deckTopY + 0.002, 0.3], [0.48, deckTopY + 0.002, -0.3], [-0.46, deckTopY + 0.002, 0.3], [-0.46, deckTopY + 0.002, -0.3]]} material={materials.aluminium} />
-      {hazCams.map((p) => (
-        <group key={p.join()} position={p}>
-          <BeveledBox size={[0.04, 0.06, 0.08]} material={materials.white} bevelM={0.01} />
-          <mesh position={[0.022, 0, 0]} rotation={[0, Math.PI / 2, 0]} material={materials.glass}>
-            <circleGeometry args={[0.018, 12]} />
-          </mesh>
-        </group>
-      ))}
+      <MergedStatic>
+        <BeveledBox size={body.size} position={body.center} material={materials.graphite} bevelM={0.03} />
+        <BeveledBox size={[bw + 0.02, 0.04, bd + 0.02]} position={[body.center[0], deckTopY - 0.02, 0]} material={materials.white} bevelM={0.012} />
+        {[1, -1].map((s) => (
+          <BeveledBox key={s} size={[bw * 0.7, bh * 0.7, 0.015]} position={[body.center[0] - 0.05, body.center[1], s * (bd / 2 + 0.008)]} material={materials.radiator} bevelM={0.005} />
+        ))}
+        <mesh position={[-0.12, deckTopY + 0.004, 0.02]} rotation={[-Math.PI / 2, 0, 0]} material={materials.solarHi}>
+          <planeGeometry args={[0.42, 0.58]} />
+        </mesh>
+        <Fasteners points={[[0.48, deckTopY + 0.002, 0.3], [0.48, deckTopY + 0.002, -0.3], [-0.46, deckTopY + 0.002, 0.3], [-0.46, deckTopY + 0.002, -0.3]]} material={materials.aluminium} />
+        {hazCams.map((p) => (
+          <group key={p.join()} position={p}>
+            <BeveledBox size={[0.04, 0.06, 0.08]} material={materials.white} bevelM={0.01} />
+            <mesh position={[0.022, 0, 0]} rotation={[0, Math.PI / 2, 0]} material={materials.glass}>
+              <circleGeometry args={[0.018, 12]} />
+            </mesh>
+          </group>
+        ))}
+      </MergedStatic>
 
       {/* Rocker-bogie suspension, differential bar, steering actuators over the corner wheels. */}
       <StrutInstances struts={links} material={materials.graphite} />
-      <mesh position={[ROVER.rockerPivot[0], ROVER.rockerPivot[1] + 0.12, 0]} rotation={[Math.PI / 2, 0, 0]} material={materials.aluminium}>
-        <cylinderGeometry args={[0.015, 0.015, ROVER.trackM * 0.9, 8]} />
-      </mesh>
-      {[1, -1].flatMap((s) =>
-        [REAR, FRONT].map((x) => (
-          <BeveledBox key={`${s}${x}`} size={[0.08, 0.08, 0.08]} position={[x, HUB_Y + 0.11, s * (ROVER.trackM / 2)]} material={materials.white} bevelM={0.012} />
-        )),
-      )}
+      <MergedStatic>
+        <mesh position={[ROVER.rockerPivot[0], ROVER.rockerPivot[1] + 0.12, 0]} rotation={[Math.PI / 2, 0, 0]} material={materials.aluminium}>
+          <cylinderGeometry args={[0.015, 0.015, ROVER.trackM * 0.9, 8]} />
+        </mesh>
+        {[1, -1].flatMap((s) =>
+          [REAR, FRONT].map((x) => (
+            <BeveledBox key={`${s}${x}`} size={[0.08, 0.08, 0.08]} position={[x, HUB_Y + 0.11, s * (ROVER.trackM / 2)]} material={materials.white} bevelM={0.012} />
+          )),
+        )}
+      </MergedStatic>
       {[1, -1].flatMap((s) =>
         ROVER.wheelX.map((x, i) => (
           <group key={`${s}${x}`} position={[x, HUB_Y, s * (ROVER.trackM / 2)]}>
@@ -181,18 +186,20 @@ export function ConstructionRover({ materials, motion, activity = 'parked', anim
       </group>
 
       {/* Anchor magazine: three spare helical anchors beside the arm. */}
-      <group position={[0.08, deckTopY, 0.12]}>
-        <BeveledBox size={[0.16, 0.1, 0.18]} position={[0, 0.05, 0]} material={materials.white} bevelM={0.015} />
-        {[-0.05, 0, 0.05].map((z) => (
-          <mesh key={z} position={[0, 0.14, z]} material={materials.warm}>
-            <cylinderGeometry args={[0.018, 0.018, 0.1, 8]} />
-          </mesh>
-        ))}
-      </group>
+      <MergedStatic>
+        <group position={[0.08, deckTopY, 0.12]}>
+          <BeveledBox size={[0.16, 0.1, 0.18]} position={[0, 0.05, 0]} material={materials.white} bevelM={0.015} />
+          {[-0.05, 0, 0.05].map((z) => (
+            <mesh key={z} position={[0, 0.14, z]} material={materials.warm}>
+              <cylinderGeometry args={[0.018, 0.018, 0.1, 8]} />
+            </mesh>
+          ))}
+        </group>
+      </MergedStatic>
 
       <group position={ROVER.arm.base}>
         <RoverArm pose={() => arm.current} materials={materials} />
       </group>
     </group>
   )
-}
+})

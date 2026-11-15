@@ -61,8 +61,8 @@ The scene follows the landing site chosen in the Mission Designer.
 ## LUNAR ECHO mission hardware
 
 Three reusable, animated procedural models. Positions come from
-`utilities/missionSceneLayout.ts` (`MissionSceneConfig`: lander heading, serviced anchors, rover
-standoff, speeds), never from inside the models.
+`utilities/missionSceneLayout.ts` (`MissionSceneConfig`: lander heading, anchors the rover drills,
+rover and winch standoffs, speeds), never from inside the models.
 
 | Model | File | Driven by props | Notes |
 | --- | --- | --- | --- |
@@ -76,8 +76,27 @@ the React tree does not re-render per frame. `prefers-reduced-motion` snaps to t
 
 **Sequences.** `animations/missionTimeline.ts` holds the pure curves: `landerPose` (descent from
 24 m, legs lock before touchdown, shock stroke, engine shutdown, dust), `egressPose` (clamps → ramp
-→ drive), `telescopeDeployment` (anchors → towers → cables → reflector → receiver). The rover's work
-loop (`utilities/roverRoute.ts`) drives the rim route, turns to face each anchor and runs the drill.
+→ drive), `telescopeDeployment` (anchors → towers → cables → reflector → receiver, split by
+`TELESCOPE_STEPS`). `MISSION_STEPS` names the nine visible steps (descent, landing, touchdown,
+rover deployment, egress, anchor installation, reflector deployment, receiver installation,
+operations); `missionStep(visual)` returns the current one and the scene shows it as a segmented
+step bar (clickable in the concept playback).
+
+**Orchestration: one source of progress.** Nothing in the scene runs on its own clock. The rover's
+pose is a pure function of mission progress (`utilities/roverMission.ts`, `roverMissionPose`):
+shelf → ramp → a one-way tour of every rim anchor (`missionSceneLayout.route`, clamped, never
+looping) → the nearest tower winch, arm docked while cables are tensioned → parked. The layout turns
+the route's timing into a per-anchor drill window (`anchorSchedule`), and the telescope grows each
+anchor exactly while the rover's drill runs on it. Consequences, all tested:
+
+- scrubbing and replays always show the same frame for the same progress;
+- pausing (concept playback or the simulation) freezes everything; a lunar night, a robotic delay,
+  or a failure leaves the rover exactly where construction stopped;
+- every model eases the shared values with the same rates (`MISSION_EASE`) and the telescope is
+  mounted together with the lander, so the rover, the ramp, and the anchors stay in step.
+
+`RoverRouteGuide` draws the tour on the ground (driven part bright) while the rover is on it, so
+its progress reads in wide shots.
 
 **Gameplay connection.** `visualStateFromSimulation(state, context)` maps the engine's state to the
 scene; it only reads state:
@@ -88,9 +107,9 @@ scene; it only reads state:
 | `landing` (`daysInPhase / landingDays`) | descent → touchdown → engine shutdown |
 | entering `construction` with `rob-rover` in the design | rover egress down the ramp |
 | `constructionProgress` | telescope assembly 0–100 % |
-| `isLunarNight`, `constructionStallUntilDay` (robotic delay) | rover parks; sun dims at night |
+| `isLunarNight`, `constructionStallUntilDay` (robotic delay) | progress holds, so the rover stops; sun and regolith bounce fade at night |
 | `instrumentStatus` operating/degraded | receiver feed ring glows, faster tower beacons |
-| `failureReason` | caption; launch/transit losses leave the site empty |
+| `failureReason` | caption; step bar marks where it stopped; launch/transit losses leave the site empty; a landing-phase failure never shows rover deployment |
 
 Gaps (documented, not invented): the engine has no separate landing-touchdown, rover-deployment,
 or per-step construction events, so touchdown is the landing phase's progress, egress happens at
@@ -103,6 +122,39 @@ Mission Control: live view (`MissionSurface3D`) driven by the running simulation
 player select/focus each asset (click or chips), hide assets, reset the camera, and read details.
 The telescope card states that it is hypothetical ASTRA hardware inspired by the NASA NIAC LCRT
 concept, not an operational NASA mission.
+
+**Scene scale.** The lander (≈4.7 m across the footpads), rover (1.5 m), anchors, towers, and
+receiver are drawn at their own plausible size. The observatory site is a compressed gameplay
+stand-in: the scene reflector is 32 m across against the 350 m Phase II concept (≈1:11), and the
+crater 52 m against 1.3 km (≈1:25), so the reflector fills more of its crater than in the concept.
+Within the stand-in every relation holds (the receiver hangs at the reflector's true focal point,
+towers clear it, every cable ends on real geometry). The concept values are sourced data
+(`src/data/environment/lcrt-reference.json`, source `lcrt-phase2`); `utilities/sceneScale.ts`
+computes the factors and the telescope card shows the scene size, the concept size, and the
+scale. The UI never presents the model as full size.
+
+**Draw-call budget.** Rigid sub-assemblies are wrapped in `components/MergedStatic.tsx`, which
+bakes their plain meshes into one mesh per material (and shadow flags) after mount
+(`utilities/mergeStatic.ts`). Only wrap parts that never move relative to each other; instanced
+meshes are skipped (they report `type === 'Mesh'` too, so the check is `isInstancedMesh`).
+Repeated assemblies with per-copy transforms (rim anchors, canister petals, tower footings) use
+`components/InstancedAssembly.tsx`. Models split into a thin outer component that eases the
+changing number and a memoized body that reads it through a ref, so playback ticks do not
+re-render the hardware. Measured: lander 210 → 110 meshes, rover 122 → 83, telescope 109 → 33;
+whole scene in the browser 616 → 366 draw calls (lander selected, egress); React render per
+playback tick ≈8.4 ms → ≈0.5 ms (headless profiler).
+
+**Blank-frame investigation (Phase 4).** A frame once captured blank in headless Chrome
+(swiftshader, 1400 × 1100, egress, lander selected). It could not be reproduced in 10+ captures of
+the same configuration (also with four concurrent browsers). A headless sweep of 101 timeline
+points found no non-finite or degenerate transform. The blank capture's canvas area matched the
+container background (not the canvas clear colour), i.e. no WebGL frame had been presented yet;
+instrumentation showed swiftshader drawing only ~3–4 frames per 16 virtual seconds, so a
+virtual-time screenshot can fire before the first frame. Defensive handling: `Scene3D` shows
+"Preparing 3D view…" until a frame is actually drawn (`data-scene-state` on the container:
+`starting` / `rendered` / `contextLost`), surfaces a lost WebGL context with a retry instead of a
+silent blank canvas, and the WebGL support probe releases its context so it never counts against
+the browser's context limit.
 
 **GLB replacement.** Each model sits in `ReplaceableModel` with a registry id
 (`lander-lunar-echo`, `structure-lcrt-telescope`, `rover-deployment`). Marking the asset

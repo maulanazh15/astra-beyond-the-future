@@ -4,7 +4,7 @@ import type {
   DataDisclaimer,
   SpacecraftComponent,
 } from '../types/component'
-import type { LunarSite, ThermalProfile } from '../types/environment'
+import type { LcrtReference, LunarSite, ThermalProfile } from '../types/environment'
 import type { LaunchVehicle, Mission, OrbitProfile } from '../types/mission'
 import type { ModelAsset } from '../types/modelAsset'
 import type { NasaSource } from '../types/nasaSource'
@@ -15,6 +15,7 @@ import modelAssetsJson from './assets/model-assets.json'
 import assumptionsJson from './assumptions/gameplay-assumptions.json'
 import categoriesJson from './components/categories.json'
 import componentsJson from './components/components.json'
+import lcrtReferenceJson from './environment/lcrt-reference.json'
 import lunarSitesJson from './environment/lunar-sites.json'
 import thermalProfilesJson from './environment/thermal-profiles.json'
 import launchVehiclesJson from './launch-vehicles/launch-vehicles.json'
@@ -51,6 +52,8 @@ export const lunarSites = lunarSitesJson.sites as LunarSite[]
 export const lunarSitesNote = lunarSitesJson.note
 export const thermalProfiles = thermalProfilesJson.profiles as ThermalProfile[]
 export const thermalProfilesNote = thermalProfilesJson.note
+export const lcrtReference = lcrtReferenceJson.reference as LcrtReference
+export const lcrtReferenceNote = lcrtReferenceJson.note
 
 export function getSource(id: string): NasaSource | undefined {
   return nasaSources.find((source) => source.id === id)

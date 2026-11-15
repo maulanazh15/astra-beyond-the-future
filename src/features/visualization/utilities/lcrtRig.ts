@@ -12,6 +12,21 @@ import type { Strut } from './struts'
 export const FURLED_SCALE = 0.05
 export const CANISTER_RADIUS_M = 1.1
 export const RECEIVER_STOW_OFFSET_M = 0.7
+/** Cable winch on each tower footing, this far outward from the tower axis (m). */
+export const WINCH_OFFSET_M = 1.6
+
+/** Part of the anchor step (0–1) during which one anchor is drilled in. */
+export type AnchorWindow = { start: number; end: number }
+
+/** Anchors drilled one after another in index order, each taking an equal share. */
+export function defaultAnchorSchedule(count: number): AnchorWindow[] {
+  return Array.from({ length: count }, (_, i) => ({ start: i / count, end: (i + 1) / count }))
+}
+
+/** How far each anchor is installed (0–1) at anchor-step progress `anchors`. */
+export function anchorInstallProgress(anchors: number, schedule: readonly AnchorWindow[]): number[] {
+  return schedule.map(({ start, end }) => (anchors >= end ? 1 : anchors <= start ? 0 : (anchors - start) / (end - start)))
+}
 
 export const SUSPENSION_RADIUS_M = 0.045
 export const TIE_DOWN_FRACTION = 0.72

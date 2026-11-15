@@ -1,15 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { componentCatalog, gameplayAssumptions, getMission, getSite, getThermalProfile, launchVehicles, orbitProfiles, simulationConfig } from '../../src/data'
 import { createSimulation, isFinished, prepareSimulation, startSimulation, stepSimulation } from '../../src/engine/simulation'
-import {
-  DESCENT_START_ALTITUDE_M,
-  TOUCHDOWN_AT,
-  conceptVisualState,
-  egressPose,
-  landerPose,
-  telescopeDeployment,
-  visualStateFromSimulation,
-} from '../../src/features/visualization/animations/missionTimeline'
+import { conceptStepStart, conceptVisualState, DESCENT_START_ALTITUDE_M, egressPose, landerPose, MISSION_STEPS, missionStep, telescopeDeployment, TOUCHDOWN_AT, visualStateFromSimulation } from '../../src/features/visualization/animations/missionTimeline'
 import type { MissionStageId } from '../../src/features/visualization/animations/missionTimeline'
 import type { SimulationState } from '../../src/types/simulation'
 
@@ -107,6 +99,41 @@ describe('concept playback', () => {
   it('delivers the telescope only after touchdown', () => {
     expect(conceptVisualState(0.1).telescopeVisible).toBe(false)
     expect(conceptVisualState(0.25).telescopeVisible).toBe(true)
+  })
+})
+
+describe('mission sequence (nine steps)', () => {
+  it('plays all nine steps in order through the concept playback', () => {
+    const seen: string[] = []
+    for (let i = 0; i <= 2000; i += 1) {
+      const step = missionStep(conceptVisualState(i / 2000))
+      if (step && seen[seen.length - 1] !== step) seen.push(step)
+    }
+    expect(seen).toEqual(MISSION_STEPS.map((s) => s.id))
+  })
+
+  it('never captions egress once the step bar has moved on to the anchors', () => {
+    for (let i = 0; i <= 2000; i += 1) {
+      const v = conceptVisualState(i / 2000)
+      if (missionStep(v) === 'anchors') expect(v.caption).not.toMatch(/egress/)
+    }
+  })
+
+  it('jumps land inside the chosen step', () => {
+    for (const { id } of MISSION_STEPS) expect(missionStep(conceptVisualState(conceptStepStart(id)))).toBe(id)
+  })
+
+  it('shows no step before the lander arrives or when it is lost before the landing burn', () => {
+    const lost = { ...conceptVisualState(0), stage: 'lost' as const, landing: 0, failed: true }
+    expect(missionStep(lost)).toBeNull()
+    expect(missionStep({ ...conceptVisualState(0), stage: 'inTransit' })).toBeNull()
+  })
+
+  it('reaches operations only with the receiver on in the concept playback', () => {
+    const end = conceptVisualState(1)
+    expect(missionStep(end)).toBe('operations')
+    expect(end.receiverActive).toBe(true)
+    expect(conceptVisualState(conceptStepStart('receiver')).receiverActive).toBe(false)
   })
 })
 

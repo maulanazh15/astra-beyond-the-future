@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { getModelAsset } from '../assetRegistry'
 import { ModelViewer } from '../components/ModelViewer'
 import { Earth } from '../models/Earth'
@@ -29,7 +30,7 @@ type LunarEnvironmentProps = {
 }
 
 /** Ground to the horizon, rocks and boulders, stars, and Earth when the site faces it. */
-export function LunarEnvironment({ terrain, rocks, earthVisible, animate }: LunarEnvironmentProps) {
+export const LunarEnvironment = memo(function LunarEnvironment({ terrain, rocks, earthVisible, animate }: LunarEnvironmentProps) {
   const ground = <LunarTerrain terrain={terrain} />
   // A sculpted terrain model replaces the procedural ground once it is registered as available.
   const terrainAsset = getModelAsset(TERRAIN_ASSET_ID)
@@ -41,4 +42,4 @@ export function LunarEnvironment({ terrain, rocks, earthVisible, animate }: Luna
       {earthVisible && <Earth positionM={EARTH_POSITION_M} radiusM={EARTH_RADIUS_M} seed={terrain.config.seed} animate={animate} />}
     </>
   )
-}
+})

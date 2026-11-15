@@ -1,8 +1,9 @@
 import { useFrame } from '@react-three/fiber'
-import { useRef } from 'react'
+import { memo, useRef, useState } from 'react'
+import type { RefObject } from 'react'
 import { Color, MeshBasicMaterial } from 'three'
 import type { Group, Mesh } from 'three'
-import { landerPose } from '../../animations/missionTimeline'
+import { MISSION_EASE, landerPose } from '../../animations/missionTimeline'
 import type { LanderPose } from '../../animations/missionTimeline'
 import { useDisposable } from '../../hooks/useDisposable'
 import { useEasedValue } from '../../hooks/useEasedValue'
@@ -11,6 +12,7 @@ import { toTexture } from '../../materials/textures'
 import { LANDER, LEG_BEARINGS_RAD, PRIMARY_STRUT_LENGTH_M, braceAnchors, legAngleRad, legPoint } from '../../utilities/landerLayout'
 import { radialFalloffMap } from '../../utilities/proceduralTextures'
 import type { Strut } from '../../utilities/struts'
+import { MergedStatic } from '../../components/MergedStatic'
 import { DynamicStruts } from '../DynamicStruts'
 import { DescentEngine } from './DescentEngine'
 import { LanderAvionics } from './LanderAvionics'
@@ -51,12 +53,20 @@ function secondaryStruts(deploy: number): { sleeves: Strut[]; rods: Strut[] } {
  * group. Every moving part is driven from two numbers (`landing`, `roverEgress`).
  */
 export function LunarLander({ materials, landing = 1, roverEgress = 0, animate = true }: LunarLanderProps) {
-  const landingValue = useEasedValue(landing, animate, 1.4)
-  const egressValue = useEasedValue(roverEgress, animate, 1.4)
-  const pose = useRef<LanderPose>(landerPose(landing))
+  const landingValue = useEasedValue(landing, animate, MISSION_EASE.landing)
+  const egressValue = useEasedValue(roverEgress, animate, MISSION_EASE.egress)
+  const [initialLanding] = useState(landing)
+  // The body reads the eased values through refs, so new progress values never re-render it.
+  return <LanderBody materials={materials} landing={landingValue} egress={egressValue} initialLanding={initialLanding} animate={animate} />
+}
+
+type LanderBodyProps = { materials: SpacecraftMaterials; landing: RefObject<number>; egress: RefObject<number>; initialLanding: number; animate: boolean }
+
+const LanderBody = memo(function LanderBody({ materials, landing: landingValue, egress: egressValue, initialLanding, animate }: LanderBodyProps) {
+  const pose = useRef<LanderPose>(landerPose(initialLanding))
   const flight = useRef<Group>(null)
   const dust = useRef<Mesh>(null)
-  const struts = useRef({ deploy: -1, ...secondaryStruts(landerPose(landing).legDeploy) })
+  const struts = useRef({ deploy: -1, ...secondaryStruts(landerPose(initialLanding).legDeploy) })
   const dustMap = useDisposable(() => toTexture(radialFalloffMap(128)), [])
   const dustMaterial = useDisposable(
     () => new MeshBasicMaterial({ color: new Color('#8d8880'), alphaMap: dustMap, transparent: true, opacity: 0, depthWrite: false }),
@@ -93,7 +103,11 @@ export function LunarLander({ materials, landing = 1, roverEgress = 0, animate =
   return (
     <group>
       <group ref={flight} name="lander-flight">
-        <LanderStructure materials={materials} />
+        {/* Body, bay, tanks, and avionics are one rigid assembly: baked to a few draw calls. */}
+        <MergedStatic>
+          <LanderStructure materials={materials} />
+          <LanderAvionics materials={materials} animate={animate} />
+        </MergedStatic>
         <DescentEngine pose={pose} materials={materials} />
         {LEG_BEARINGS_RAD.map((b) => (
           <LanderLeg key={b} bearingRad={b} pose={pose} materials={materials} />
@@ -101,7 +115,6 @@ export function LunarLander({ materials, landing = 1, roverEgress = 0, animate =
         <DynamicStruts count={8} source={source('sleeves')} material={materials.graphite} />
         <DynamicStruts count={8} source={source('rods')} material={materials.aluminium} />
         <PayloadShelf egress={egressValue} materials={materials} />
-        <LanderAvionics materials={materials} animate={animate} />
       </group>
       {/* Regolith blown outward by the plume in the last meters of descent. */}
       <mesh ref={dust} name="lander-dust" rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.06, 0]} material={dustMaterial} visible={false}>
@@ -109,4 +122,4 @@ export function LunarLander({ materials, landing = 1, roverEgress = 0, animate =
       </mesh>
     </group>
   )
-}
+})

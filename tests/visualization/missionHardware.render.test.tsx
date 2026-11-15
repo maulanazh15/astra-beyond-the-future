@@ -109,7 +109,8 @@ describe('LUNAR ECHO scene integration', () => {
   it('shows only the lander during descent, with the rover riding its shelf', async () => {
     root = await renderThree(scene(conceptVisualState(0.05)))
     await root.frames(2)
-    expect(root.find('telescope')).toBeUndefined()
+    // Mounted with the lander (so its progress eases in step with the rover) but not shown yet.
+    expect(root.find('telescope')?.visible).toBe(false)
     expect(root.find('rover-body')!.position.y).toBeGreaterThan(world.layout.lander.positionM[1] + 5)
   })
 

@@ -1,6 +1,6 @@
 import { Eye, EyeOff, Info, Pause, Play, RotateCcw, X } from 'lucide-react'
 import { useMemo, useState } from 'react'
-import { conceptVisualState } from '../animations/missionTimeline'
+import { conceptStepStart, conceptVisualState, missionStep } from '../animations/missionTimeline'
 import type { MissionVisualState } from '../animations/missionTimeline'
 import { Scene3D } from '../components/Scene3D'
 import { usePlayback } from '../hooks/usePlayback'
@@ -10,9 +10,10 @@ import { MISSION_ASSET_IDS, missionAssetInfo, missionAssetStatus, presentAssets,
 import type { MissionAssetId } from '../utilities/missionAssets'
 import { buildMissionWorld } from '../utilities/missionWorld'
 import { LunarMissionScene } from './LunarMissionScene'
+import { MissionStepBar } from './MissionStepBar'
 
 /** Length of the full concept playback, descent to first light (s). */
-const CONCEPT_PLAYBACK_S = 48
+const CONCEPT_PLAYBACK_S = 80
 
 export type MissionSceneViewerProps = {
   site: SceneSite
@@ -98,6 +99,7 @@ export function MissionSceneViewer({ site, live, className }: MissionSceneViewer
       )}
 
       <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-space-950/95 to-transparent px-4 pt-10 pb-3 text-[11px] text-slate-400">
+        <MissionStepBar step={missionStep(visual)} failed={visual.failed} onJump={live ? undefined : (id) => playback.seek(conceptStepStart(id))} />
         <p className="mb-1.5 text-xs text-slate-100" aria-live="polite">
           {visual.caption}
         </p>

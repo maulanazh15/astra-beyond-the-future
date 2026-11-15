@@ -17,12 +17,24 @@ export type CameraFocusTarget = {
 }
 
 const MOVE_S = 1.3
+const GROUND_CLEARANCE_M = 1.2
 
 /**
  * Glides the orbit camera to a focused object, then keeps following it if it moves. The player can
  * still orbit and zoom around the focused object at any time.
  */
-export function CameraFocus({ controls, focus, defaultMinDistanceM }: { controls: RefObject<ThreeOrbitControls | null>; focus: CameraFocusTarget | null; defaultMinDistanceM: number }) {
+export function CameraFocus({
+  controls,
+  focus,
+  defaultMinDistanceM,
+  groundHeightAt,
+}: {
+  controls: RefObject<ThreeOrbitControls | null>
+  focus: CameraFocusTarget | null
+  defaultMinDistanceM: number
+  /** Terrain height, so a camera following a moving object (the rover on the crater rim) never dips into the ground. */
+  groundHeightAt?: (x: number, z: number) => number
+}) {
   const get = useThree((s) => s.get)
   const move = useRef<{ fromCam: Vector3; toCam: Vector3; fromTarget: Vector3; t: number } | null>(null)
   const last = useRef(new Vector3())
@@ -63,6 +75,10 @@ export function CameraFocus({ controls, focus, defaultMinDistanceM }: { controls
         camera.position.add(drift)
         c.target.add(drift)
       }
+    }
+    if (groundHeightAt) {
+      const floor = groundHeightAt(camera.position.x, camera.position.z) + GROUND_CLEARANCE_M
+      if (camera.position.y < floor) camera.position.y = floor
     }
     last.current.copy(now)
   })

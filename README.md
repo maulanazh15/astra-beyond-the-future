@@ -2,7 +2,7 @@
 
 > **Design Tomorrow. Explore Beyond.**
 
-**Live:** https://astra-beyond-future.homelabchester.my.id/
+**Live:** https://astra-beyond-future.homelabchester.my.id/ · **Source:** https://github.com/maulanazh15/astra-beyond-the-future
 
 ASTRA is a web-based space mission design and simulation game built for the
 **NASA Space Apps Challenge 2026**. You lead a mission design team that turns a

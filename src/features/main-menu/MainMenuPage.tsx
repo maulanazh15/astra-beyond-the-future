@@ -1,4 +1,5 @@
-import { FileBarChart, Orbit, Play, RotateCcw } from 'lucide-react'
+import { CodeXml, FileBarChart, Orbit, Play, RotateCcw } from 'lucide-react'
+import { REPOSITORY_URL } from '../../app/links'
 import { DEFAULT_MISSION_ID, paths } from '../../app/paths'
 import { ButtonLink } from '../../components/common/ButtonLink'
 
@@ -69,7 +70,13 @@ export function MainMenuPage() {
               </ButtonLink>
             ))}
           </nav>
-          <p className="mt-10 font-mono text-xs text-slate-500">v0.1 · MVP prototype · mock data</p>
+          <p className="mt-10 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-xs text-slate-500">
+            <span>v0.1 · MVP prototype · mock data</span>
+            <a href={REPOSITORY_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-slate-400 hover:text-cyan-300">
+              <CodeXml className="size-3.5" aria-hidden />
+              Source on GitHub
+            </a>
+          </p>
         </div>
       </div>
     </div>

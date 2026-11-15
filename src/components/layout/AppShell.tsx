@@ -1,5 +1,6 @@
-import { Orbit, Rocket } from 'lucide-react'
+import { CodeXml, Orbit, Rocket } from 'lucide-react'
 import { Link, NavLink, Outlet } from 'react-router'
+import { REPOSITORY_URL } from '../../app/links'
 import { DEFAULT_MISSION_ID, paths } from '../../app/paths'
 
 const navItems = [
@@ -49,8 +50,12 @@ export function AppShell() {
       <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6 sm:py-10">
         <Outlet />
       </main>
-      <footer className="border-t border-space-700 py-4 text-center text-xs text-slate-500">
-        Hypothetical mission concepts informed by NASA research. Not official NASA predictions.
+      <footer className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 border-t border-space-700 px-4 py-4 text-center text-xs text-slate-500">
+        <span>Hypothetical mission concepts informed by NASA research. Not official NASA predictions.</span>
+        <a href={REPOSITORY_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-slate-400 hover:text-cyan-300">
+          <CodeXml className="size-3.5" aria-hidden />
+          Source on GitHub
+        </a>
       </footer>
     </div>
   )
