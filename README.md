@@ -88,6 +88,10 @@ The nginx vhost (`conf.d/astra.conf` on the server) listens on `:8080`, falls
 back to `index.html` for client-side routes, and caches `/assets/` immutably
 while serving `index.html` with `no-cache`.
 
+## Team BOYS NextSpace
+1. Ananda Dzikra Adhipramana
+2. Maulana Zhahran
+
 ## License & disclaimer
 
 This is an educational project for NASA Space Apps Challenge 2026. It is not
